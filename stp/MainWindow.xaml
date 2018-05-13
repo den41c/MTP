@@ -7,7 +7,20 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="150,192,0,0" VerticalAlignment="Top" Width="75"/>
+        <GridSplitter HorizontalAlignment="Left" Height="419" Margin="258,-10,0,0" VerticalAlignment="Top" Width="6"/>
+        <Button x:Name="AddGroup" Content="Add Group" HorizontalAlignment="Left" Margin="58,389,0,0" VerticalAlignment="Top" Width="75" Click="AddGroup_Click"/>
+        <ListBox x:Name="ListGroup1" HorizontalAlignment="Left" Height="374" Margin="289,10,0,0" VerticalAlignment="Top" Width="123"/>
+        <DataGrid x:Name="GroupList" HorizontalAlignment="Left" Height="374" Margin="10,10,0,0" VerticalAlignment="Top" Width="231">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding = "{Binding GroupName}"/>
+            </DataGrid.Columns>
 
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding GroupName}"/>
+                </DataTemplate>
+                
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
     </Grid>
 </Window>

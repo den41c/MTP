@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using stp.Classes;
 
 namespace stp
 {
@@ -20,9 +21,40 @@ namespace stp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<Group> list_group = new List<Group>();
         public MainWindow()
         {
             InitializeComponent();
+            //var list = new List<Group>();
+            
+            for (int i=0;i<3;i++)
+            {
+                list_group.Add(new Group() {
+                    GroupName = "football"
+                });
+            }
+            
+            //ListGroup1.ItemsSource = list_group;
+
+
+           
+            GroupList.ItemsSource = list_group;
+
+
+
+        }
+
+        private void AddGroup_Click(object sender, RoutedEventArgs e)
+        {
+           // ListGroup.
+            //var listbox = (ListBox)sender;
+            list_group.Add(new Group() {
+                GroupName = "volleyball"
+            });
+            //ListGroup1.ItemsSource = list_group;
+
+            GroupList.Items.Refresh();
+                
         }
     }
 }
