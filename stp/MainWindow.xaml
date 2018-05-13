@@ -8,19 +8,15 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <GridSplitter HorizontalAlignment="Left" Height="419" Margin="258,-10,0,0" VerticalAlignment="Top" Width="6"/>
-        <Button x:Name="AddGroup" Content="Add Group" HorizontalAlignment="Left" Margin="58,389,0,0" VerticalAlignment="Top" Width="75" Click="AddGroup_Click"/>
-        <ListBox x:Name="ListGroup1" HorizontalAlignment="Left" Height="374" Margin="289,10,0,0" VerticalAlignment="Top" Width="123"/>
-        <DataGrid x:Name="GroupList" HorizontalAlignment="Left" Height="374" Margin="10,10,0,0" VerticalAlignment="Top" Width="231">
+        <Button x:Name="AddGroup" Content="Add Group" HorizontalAlignment="Left" Margin="10,389,0,0" VerticalAlignment="Top" Width="75" Click="AddGroup_Click" RenderTransformOrigin="0.5,0.5"/>
+        <!--<ListBox x:Name="ListGroup1" HorizontalAlignment="Left" Height="374" Margin="289,10,0,0" VerticalAlignment="Top" Width="192"/>-->
+        <DataGrid x:Name="GroupListGrid" HorizontalAlignment="Left" Height="374" Margin="10,10,0,0" VerticalAlignment="Top" Width="231">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding = "{Binding GroupName}"/>
+                <!--<DataGridCheckBoxColumn Header="Done" IsReadOnly="False" Binding="{Binding Path = Done, UpdateSourceTrigger=PropertyChanged}" Width="10"></DataGridCheckBoxColumn>-->
+                <DataGridTextColumn Header="Group" IsReadOnly="False"  Binding="{Binding Path = GroupName}" Width="150"></DataGridTextColumn>
             </DataGrid.Columns>
 
-            <DataGrid.RowDetailsTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding GroupName}"/>
-                </DataTemplate>
-                
-            </DataGrid.RowDetailsTemplate>
         </DataGrid>
+        <Button x:Name="RemoveGroup" Content="Remove Group" HorizontalAlignment="Left" Margin="152,389,0,0" VerticalAlignment="Top" Width="89" Click="RemoveGroup_Click" IsEnabled="False"/>
     </Grid>
 </Window>

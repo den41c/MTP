@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using stp.Classes;
+using System.Linq;
 
 namespace stp
 {
@@ -25,36 +26,64 @@ namespace stp
         public MainWindow()
         {
             InitializeComponent();
+            GroupListGrid.SelectedCellsChanged += GroupList_SelectedCellsChanged;
             //var list = new List<Group>();
-            
+
             for (int i=0;i<3;i++)
             {
                 list_group.Add(new Group() {
                     GroupName = "football"
                 });
             }
-            
+
             //ListGroup1.ItemsSource = list_group;
 
 
-           
-            GroupList.ItemsSource = list_group;
+            list_group.ForEach(w => GroupListGrid.Items.Add(w));
+            //GroupList.Items.Add(list_group.First());//.ItemsSource = list_group;
 
 
 
+        }
+
+        private void GroupList_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            RemoveGroup.IsEnabled = true;
         }
 
         private void AddGroup_Click(object sender, RoutedEventArgs e)
         {
-           // ListGroup.
+            // ListGroup.
             //var listbox = (ListBox)sender;
-            list_group.Add(new Group() {
+
+            //ListGroup1.ItemsSource = list_group;
+           
+            GroupListGrid.Items.Add(new Group()
+            {
                 GroupName = "volleyball"
             });
-            //ListGroup1.ItemsSource = list_group;
-
-            GroupList.Items.Refresh();
+           
                 
         }
+
+     
+
+        //private void GroupList_AddingNewItem(object sender, AddingNewItemEventArgs e)
+        //{
+
+        //}
+
+        private void RemoveGroup_Click(object sender, RoutedEventArgs e)
+        {
+            var listToRemove = GroupListGrid.SelectedCells;
+            foreach (var itemToRemove in listToRemove)
+            {
+                GroupListGrid.Items.Remove(itemToRemove.Item);
+            }
+            GroupListGrid.Items.Refresh();
+            RemoveGroup.IsEnabled = false;
+        }
+
+    
     }
 }

@@ -8,11 +8,12 @@ namespace stp.Classes
 {
     class Group
     {
-        private string group_name;
+        //private string group_name;
+        
         public string GroupName
         {
-            get { return group_name; }
-            set { group_name = value; }
+            get;
+            set;
         }
         private int GroupId;
         public override string ToString()
