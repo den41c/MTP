@@ -22,68 +22,87 @@ namespace stp
     /// </summary>
     public partial class MainWindow : Window
     {
+
         private List<Group> list_group = new List<Group>();
+        //private List<TextBox> list_group_text_boxs = new List<TextBox>();
         public MainWindow()
         {
             InitializeComponent();
-            GroupListGrid.SelectedCellsChanged += GroupList_SelectedCellsChanged;
-            //var list = new List<Group>();
 
-            for (int i=0;i<3;i++)
+            GroupListBox.SelectionChanged += GroupListBox_SelectionChanged;
+            var tasks = new List<Classes.Task>();
+            var cmd = SqlClient.CreateCommand("select * from groups");
+            var reader = cmd.ExecuteReader();
+            while (reader.Read())
             {
                 list_group.Add(new Group() {
-                    GroupName = "football"
+                    GroupId = reader.GetInt32(0),
+                    GroupName = reader.GetFieldValue<string>(1),                 
                 });
+
             }
 
-            //ListGroup1.ItemsSource = list_group;
+            tasks.Add(new Classes.Task() { TaskName = "task 3", Done = true });
+            tasks.Add(new Classes.Task() { TaskName = "task 4", Done = false });
 
 
-            list_group.ForEach(w => GroupListGrid.Items.Add(w));
-            //GroupList.Items.Add(list_group.First());//.ItemsSource = list_group;
+            TaskListBox.Items.Add(new CheckBox() { IsChecked = false, Content = "2", Uid = "1" });
+            GroupListBox.ItemsSource = list_group;
+            //GroupListGrid.ItemsSource = list_group.First().task_list;
+            foreach (var task in list_group.First().task_list)
+            {
+                TaskListBox.Items.Add(task);
+            }
 
+            //GroupListGrid.Columns.Where(w => w.Header.ToString() == "Done").First().IsReadOnly = false;
 
+            //TaskTextBox.Text = GroupListGrid.Columns.se
+            //GroupListGrid.Items.Add(new Classes.Task() { TaskName ="task 1", Done = true});
+            //GroupListGrid.Items.Add(new Classes.Task() { TaskName = "task 2 ", Done = false });
+            //list_group.ForEach(w => GroupListGrid.Items.Add(w));
 
         }
+        //private List<Classes.Task> SetTasksList(int GroupCode)
+        //{
 
-        private void GroupList_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        //    return 
+        //}
+
+        private void GroupListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            RemoveGroup.IsEnabled = true;
+            RemoveGroupButton.IsEnabled = true;
         }
 
         private void AddGroup_Click(object sender, RoutedEventArgs e)
         {
-            // ListGroup.
-            //var listbox = (ListBox)sender;
-
-            //ListGroup1.ItemsSource = list_group;
-           
-            GroupListGrid.Items.Add(new Group()
+            list_group.Add(new Group()
             {
-                GroupName = "volleyball"
+                GroupName = GroupTextBox.Text
             });
-           
-                
+            GroupListBox.Items.Refresh();
+            GroupTextBox.Text = string.Empty;
         }
 
-     
-
-        //private void GroupList_AddingNewItem(object sender, AddingNewItemEventArgs e)
-        //{
-
-        //}
 
         private void RemoveGroup_Click(object sender, RoutedEventArgs e)
         {
-            var listToRemove = GroupListGrid.SelectedCells;
-            foreach (var itemToRemove in listToRemove)
+            var itemToRemove = GroupListBox.SelectedItem;
+            if (itemToRemove == null || !(itemToRemove is Group))
             {
-                GroupListGrid.Items.Remove(itemToRemove.Item);
+                return;
             }
-            GroupListGrid.Items.Refresh();
-            RemoveGroup.IsEnabled = false;
+            list_group.Remove((Group)itemToRemove);
+            GroupListBox.Items.Refresh();
+            RemoveGroupButton.IsEnabled = false;
+        }
+        private void OKButton_Click()
+        {
+            return;
         }
 
-    
+        private void GroupTextBox_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            AddGroupButton.IsEnabled = GroupTextBox.Text != string.Empty;
+        }
     }
 }
