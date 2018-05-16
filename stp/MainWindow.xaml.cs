@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using stp.Classes;
 using System.Linq;
-
+using System.Data.SQLite;
 namespace stp
 {
     /// <summary>
@@ -28,59 +28,60 @@ namespace stp
         public MainWindow()
         {
             InitializeComponent();
-
+            
             GroupListBox.SelectionChanged += GroupListBox_SelectionChanged;
-            var tasks = new List<Classes.Task>();
+            //var tasks = new List<Classes.Task>();
             var cmd = SqlClient.CreateCommand("select * from groups");
             var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 list_group.Add(new Group() {
-                    GroupId = reader.GetInt32(0),
-                    GroupName = reader.GetFieldValue<string>(1),                 
+                    GroupId = (int)(long)reader["groupid"],
+                    GroupName =  (string)reader["groupname"],                 
                 });
-
             }
-
-            tasks.Add(new Classes.Task() { TaskName = "task 3", Done = true });
-            tasks.Add(new Classes.Task() { TaskName = "task 4", Done = false });
-
-
-            TaskListBox.Items.Add(new CheckBox() { IsChecked = false, Content = "2", Uid = "1" });
+            
             GroupListBox.ItemsSource = list_group;
-            //GroupListGrid.ItemsSource = list_group.First().task_list;
-            foreach (var task in list_group.First().task_list)
-            {
-                TaskListBox.Items.Add(task);
-            }
-
-            //GroupListGrid.Columns.Where(w => w.Header.ToString() == "Done").First().IsReadOnly = false;
-
-            //TaskTextBox.Text = GroupListGrid.Columns.se
-            //GroupListGrid.Items.Add(new Classes.Task() { TaskName ="task 1", Done = true});
-            //GroupListGrid.Items.Add(new Classes.Task() { TaskName = "task 2 ", Done = false });
-            //list_group.ForEach(w => GroupListGrid.Items.Add(w));
-
         }
-        //private List<Classes.Task> SetTasksList(int GroupCode)
-        //{
 
-        //    return 
-        //}
+        private void SetTasksListBox(int GroupCode)
+        {
+            TaskListBox.Items.Clear();
+            foreach (var task in list_group.Find(w=>(w.GroupId == GroupCode) && (w.task_list != null)).task_list)
+            {
+                TaskListBox.Items.Add(new CheckBox() { IsChecked = task.Done, Content = task.TaskName });
+            }
+            TaskListBox.Items.Refresh();
+        }
 
         private void GroupListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             RemoveGroupButton.IsEnabled = true;
+            TaskTextBox.IsEnabled = true;
+            var group = (Group)GroupListBox.SelectedItem;
+            if (group != null)
+            {
+                SetTasksListBox(group.GroupId);
+            }
+            
         }
 
         private void AddGroup_Click(object sender, RoutedEventArgs e)
         {
+            var cmd = SqlClient.CreateCommand(@"insert into GROUPS (groupname) values(@groupname);
+                                                select last_insert_rowid();
+                                                    ");
+            cmd.Parameters.Add(new SQLiteParameter("groupname", GroupTextBox.Text));
+            var newGroupId = (int)(long)cmd.ExecuteScalar();
             list_group.Add(new Group()
             {
-                GroupName = GroupTextBox.Text
+                GroupId = newGroupId,
+                GroupName = GroupTextBox.Text,
+                //task_list = new List<Classes.Task>()
             });
             GroupListBox.Items.Refresh();
             GroupTextBox.Text = string.Empty;
+
         }
 
 
@@ -91,9 +92,21 @@ namespace stp
             {
                 return;
             }
-            list_group.Remove((Group)itemToRemove);
+            var groupToRemove = (Group)itemToRemove;
+            list_group.Remove(groupToRemove);
+           
+            var cmd = SqlClient.CreateCommand(@"delete from groups where groupid = @groupid;
+                                                delete from tasks where groupid = @groupid;");
+
+            cmd.Parameters.Add(new SQLiteParameter("groupid", groupToRemove.GroupId));
+            cmd.ExecuteNonQuery();
+
+            
             GroupListBox.Items.Refresh();
+            //GroupListBox.ItemContainerGenerator.ContainerFromIndex(1);
             RemoveGroupButton.IsEnabled = false;
+            TaskTextBox.IsEnabled = false;
+            TaskListBox.Items.Clear(); 
         }
         private void OKButton_Click()
         {
@@ -104,5 +117,7 @@ namespace stp
         {
             AddGroupButton.IsEnabled = GroupTextBox.Text != string.Empty;
         }
+
+      
     }
 }

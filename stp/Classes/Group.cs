@@ -27,13 +27,13 @@ namespace stp.Classes
                 using (var reader = cmd.ExecuteReader()) {
                     while (reader.Read())
                     {
-                        var t = reader["taskid"];
+                        //var t = reader["taskid"];
                         //var t1 = reader["taskname"];
-                        var t2 = reader["done"];
+                        //var t2 = reader["done"];
                         task_list.Add(new Task()
                         {
                             TaskId = (int)(long)reader["taskid"],//reader.GetInt32(0),
-                            //TaskName = (string)reader["taskname"],
+                            TaskName = (string)reader["taskname"],
                             Done = (string)reader["done"] == "+"
                         });
                     }
