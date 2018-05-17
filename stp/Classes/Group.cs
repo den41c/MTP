@@ -34,10 +34,12 @@ namespace stp.Classes
                         {
                             TaskId = (int)(long)reader["taskid"],//reader.GetInt32(0),
                             TaskName = (string)reader["taskname"],
-                            Done = (string)reader["done"] == "+"
+                            done = (string)reader["done"] == "+"
                         });
                     }
+                    
                 }
+                
 
             }
         }
