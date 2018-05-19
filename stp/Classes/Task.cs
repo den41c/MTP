@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Data.SQLite;
 namespace stp.Classes
 {
-    public class ToDoTask
+    class Task
     {
         public string TaskName { get; set; }
         

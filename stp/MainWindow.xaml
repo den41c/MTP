@@ -5,37 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:stp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="506" Width="696">
+        Title="MainWindow" Height="450" Width="5s27">
 
     <Grid Margin="0,0,0,-6">
-        <!--<ListBox x:Name="ListGroup1" HorizontalAlignment="Left" Height="374" Margin="289,10,0,0" VerticalAlignment="Top" Width="192"/>-->
-        <TabControl HorizontalAlignment="Left" Height="464" Margin="10,10,-167,-49" VerticalAlignment="Top" Width="676">
-            <TabItem Header="ToDo">
-                <Grid Background="#FFE5E5E5" Margin="0,0,0,10">
-                    <GridSplitter HorizontalAlignment="Left" Height="419" Margin="258,-10,0,-136" VerticalAlignment="Top" Width="6"/>
-                    <ListBox x:Name="GroupListBox" HorizontalAlignment="Left" Height="374" Margin="10,10,0,-111" VerticalAlignment="Top" Width="231" TextSearch.TextPath="Name" IsTextSearchEnabled="True" />
-                    <ListView x:Name="TaskListBox" HorizontalAlignment="Left" Height="374" Margin="269,10,-217,-111" VerticalAlignment="Top" Width="240" SelectionChanged="TaskListBox_SelectionChanged">
-                        <ListView.ItemTemplate>
-                            <HierarchicalDataTemplate>
-                                <CheckBox Content="{Binding TaskName}" IsChecked="{Binding Done}" Uid="" PreviewMouseDoubleClick="CheckBox_PreviewMouseDoubleClick"/>
-                            </HierarchicalDataTemplate>
-                        </ListView.ItemTemplate>
-                        <StackPanel>
-                            <!--<CheckBox IsChecked="True" Content="Apple"/>-->
+        <!--<StackPanel>
+            <TextBlock Text="Enter some text" />
+            <TextBox x:Name="ResponseTextBox" />
+            <Button Content="OK" Click="OKButton_Click" />
+        </StackPanel>-->
 
-                        </StackPanel>
-                    </ListView>
-                    <Button x:Name="AddGroupButton" Content="Add" HorizontalAlignment="Left" Margin="110,388,0,0" VerticalAlignment="Top" Width="65" Click="AddGroup_Click" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
-                    <Button x:Name="RemoveGroupButton" Content="Remove" HorizontalAlignment="Left" Margin="180,388,0,0" VerticalAlignment="Top" Width="61" Click="RemoveGroup_Click" IsEnabled="False" Height="20"/>
-                    <TextBox x:Name="GroupTextBox" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="95" Margin="10,388,0,0" SelectionChanged="GroupTextBox_SelectionChanged"/>
-                    <Button x:Name="AddTaskButton" Content="Add" HorizontalAlignment="Left" Margin="378,389,0,0" VerticalAlignment="Top" Width="65" RenderTransformOrigin="0.5,0.5" IsEnabled="False" Click="AddTaskButton_Click"/>
-                    <Button x:Name="RemoveTaskButton" Content="Remove" HorizontalAlignment="Left" Margin="448,389,0,0" VerticalAlignment="Top" Width="61" IsEnabled="False" Height="20" Click="RemoveTaskButton_Click"/>
-                    <TextBox x:Name="TaskTextBox" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="95" Margin="278,389,0,0" IsEnabled="False" SelectionChanged="TaskTextBox_SelectionChanged"/>
-                </Grid>
-            </TabItem>
-            <TabItem Header="TabItem">
-                <Grid Background="#FFE5E5E5"/>
-            </TabItem>
-        </TabControl>
+        <GridSplitter HorizontalAlignment="Left" Height="419" Margin="258,-10,0,0" VerticalAlignment="Top" Width="6"/>
+        <Button x:Name="AddGroupButton" Content="Add" HorizontalAlignment="Left" Margin="110,388,0,0" VerticalAlignment="Top" Width="65" Click="AddGroup_Click" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
+        <!--<ListBox x:Name="ListGroup1" HorizontalAlignment="Left" Height="374" Margin="289,10,0,0" VerticalAlignment="Top" Width="192"/>-->
+        <Button x:Name="RemoveGroupButton" Content="Remove" HorizontalAlignment="Left" Margin="180,388,0,0" VerticalAlignment="Top" Width="61" Click="RemoveGroup_Click" IsEnabled="False" Height="20"/>
+        <ListBox x:Name="GroupListBox" HorizontalAlignment="Left" Height="374" Margin="10,10,0,0" VerticalAlignment="Top" Width="231" TextSearch.TextPath="Name" IsTextSearchEnabled="True" />
+        <TextBox x:Name="GroupTextBox" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="95" Margin="10,388,0,0" SelectionChanged="GroupTextBox_SelectionChanged"/>
+        <Button x:Name="AddTaskButton" Content="Add" HorizontalAlignment="Left" Margin="378,389,0,0" VerticalAlignment="Top" Width="65" RenderTransformOrigin="0.5,0.5" IsEnabled="False" Click="AddTaskButton_Click"/>
+        <Button x:Name="RemoveTaskButton" Content="Remove" HorizontalAlignment="Left" Margin="448,389,0,0" VerticalAlignment="Top" Width="61" IsEnabled="False" Height="20" Click="RemoveTaskButton_Click"/>
+        <TextBox x:Name="TaskTextBox" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="95" Margin="278,389,0,0" IsEnabled="False" SelectionChanged="TaskTextBox_SelectionChanged"/>
+        <ListView x:Name="TaskListBox" HorizontalAlignment="Left" Height="374" Margin="269,10,0,0" VerticalAlignment="Top" Width="240" SelectionChanged="TaskListBox_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <HierarchicalDataTemplate>
+                    <CheckBox Content="{Binding TaskName}" IsChecked="{Binding Done}"/>
+                </HierarchicalDataTemplate>
+            </ListBox.ItemTemplate>
+            <StackPanel>
+                <!--<CheckBox IsChecked="True" Content="Apple"/>-->
+
+            </StackPanel>
+        </ListView>
     </Grid>
 </Window>
