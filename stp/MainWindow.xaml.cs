@@ -183,6 +183,7 @@ namespace stp
             TaskListBox.Items.Refresh();
             //GroupListBox.ItemContainerGenerator.ContainerFromIndex(1);
             RemoveTaskButton.IsEnabled = false;
+
             TaskTextBox.IsEnabled = false;
             //TaskListBox.Items.Clear(); 
         }
