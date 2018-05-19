@@ -13,6 +13,7 @@ namespace stp.Classes
         public int TaskId;
         public bool done;
         public bool Done
+
         {
             get { return done; }
             set
