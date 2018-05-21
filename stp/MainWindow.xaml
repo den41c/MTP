@@ -8,8 +8,12 @@
         Title="MainWindow" Height="506" Width="696">
 
     <Grid Margin="0,0,0,-6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="431*"/>
+            <ColumnDefinition Width="257*"/>
+        </Grid.ColumnDefinitions>
         <!--<ListBox x:Name="ListGroup1" HorizontalAlignment="Left" Height="374" Margin="289,10,0,0" VerticalAlignment="Top" Width="192"/>-->
-        <TabControl HorizontalAlignment="Left" Height="464" Margin="10,10,-167,-49" VerticalAlignment="Top" Width="676">
+        <TabControl HorizontalAlignment="Left" Height="464" Margin="10,10,0,0" VerticalAlignment="Top" Width="676" Grid.ColumnSpan="2">
             <TabItem Header="ToDo">
                 <Grid Background="#FFE5E5E5" Margin="0,0,0,10">
                     <GridSplitter HorizontalAlignment="Left" Height="419" Margin="258,-10,0,-136" VerticalAlignment="Top" Width="6"/>
@@ -33,8 +37,10 @@
                     <TextBox x:Name="TaskTextBox" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="95" Margin="278,389,0,0" IsEnabled="False" SelectionChanged="TaskTextBox_SelectionChanged"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="TabItem">
-                <Grid Background="#FFE5E5E5"/>
+            <TabItem Header="Calendar">
+                <Grid Background="#FFE5E5E5">
+                    <Button Content="Connect to Google Calendar" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="169" Click="Button_Click"/>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

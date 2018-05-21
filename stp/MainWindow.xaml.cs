@@ -228,5 +228,10 @@ namespace stp
 
             this.Close();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Calendars.SignIn();
+        }
     }
 }
