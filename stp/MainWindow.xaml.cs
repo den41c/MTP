@@ -28,6 +28,7 @@ namespace stp
         public MainWindow()
         {
             InitializeComponent();
+            TaskListBox.MouseDoubleClick += TaskListBox_MouseDoubleClick;
 
             TaskListBox.Items.Clear();
             TaskListBox.Items.Refresh();
@@ -45,6 +46,11 @@ namespace stp
             }
             
             GroupListBox.ItemsSource = list_group;
+        }
+
+        private void TaskListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
         }
 
         private void SetTasksListBox(int GroupCode)
@@ -146,7 +152,7 @@ namespace stp
             cmd.Parameters.Add(new SQLiteParameter("done", "-"));
 
             var newTaskId = cmd.ExecuteNonQuery();
-            list_group.Find(w=>w.GroupId == group.GroupId).task_list.Add(new Classes.Task()
+            list_group.Find(w=>w.GroupId == group.GroupId).task_list.Add(new Classes.ToDoTask()
             {
                 TaskName = TaskTextBox.Text,
                 TaskId = newTaskId
@@ -160,7 +166,7 @@ namespace stp
             var taskItemToRemove = TaskListBox.SelectedItem;
             var groupItemToRemove = GroupListBox.SelectedItem;
 
-            if (taskItemToRemove == null || !(taskItemToRemove is Classes.Task))
+            if (taskItemToRemove == null || !(taskItemToRemove is Classes.ToDoTask))
             {
                 return;
             }
@@ -169,7 +175,7 @@ namespace stp
                 return;
             }
 
-            var taskToRemove = (Classes.Task)taskItemToRemove;
+            var taskToRemove = (Classes.ToDoTask)taskItemToRemove;
             var groupToRemove = (Classes.Group)groupItemToRemove;
 
             var cmd = SqlClient.CreateCommand(@"delete from tasks where groupid = @groupid and taskid = @taskid;");
@@ -191,6 +197,21 @@ namespace stp
         private void TaskListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             RemoveTaskButton.IsEnabled = true;
+        }
+
+        private void CheckBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var cb = (CheckBox)sender;
+            cb.IsChecked = !cb.IsChecked;
+            //var t = DependencyProperty.Register("d",)
+            //cb.
+            //cb.SetValue(new DependencyProperty.,1);
+            var task = (ToDoTask)TaskListBox.SelectedItem;
+
+            var Editform = new Edit() { ThisTask = task };
+            Editform.Show();
+
+            this.Hide();
         }
     }
 }

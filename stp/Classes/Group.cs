@@ -9,7 +9,7 @@ namespace stp.Classes
     class Group
     {
         //private string group_name;
-        public List<Task> task_list;
+        public List<ToDoTask> task_list;
         public string GroupName { get; set; }
 
         private int group_id;
@@ -19,7 +19,7 @@ namespace stp.Classes
             set
             {
                 group_id = value;
-                task_list = new List<Task>();
+                task_list = new List<ToDoTask>();
                
                 var cmd = SqlClient.CreateCommand("select taskid, taskname, done, description from TASKS where GROUPID = @groupid");
                 cmd.Parameters.Add(new SQLiteParameter("groupid", value));
@@ -27,10 +27,8 @@ namespace stp.Classes
                 using (var reader = cmd.ExecuteReader()) {
                     while (reader.Read())
                     {
-                        //var t = reader["taskid"];
-                        //var t1 = reader["taskname"];
-                        //var t2 = reader["done"];
-                        task_list.Add(new Task()
+                        
+                        task_list.Add(new ToDoTask()
                         {
                             TaskId = (int)(long)reader["taskid"],//reader.GetInt32(0),
                             TaskName = (string)reader["taskname"],
