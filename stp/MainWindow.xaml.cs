@@ -59,11 +59,13 @@ namespace stp
             {
                 GroupListBox.SelectedItem = list_group.Find(w => (w.GroupId == GroupCode));
                 TaskListBox.ItemsSource = list_group.Find(w => (w.GroupId == GroupCode) && (w.task_list != null)).task_list;
-            }  
-           
+            }
+            else
+            {
+                TaskListBox.ItemsSource = new List<ToDoTask>();
+            }
+
             TaskListBox.Items.Refresh();
-            
-           
         }
 
        
