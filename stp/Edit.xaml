@@ -7,16 +7,14 @@
         mc:Ignorable="d"
         Title="Edit" Height="332.191" Width="288.584" AllowDrop="True">
     <Grid Margin="0,0,2,8">
-        <TextBox x:Name="Name_TextBox" HorizontalAlignment="Left" Height="23" Margin="67,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
-        <Label x:Name="Name_Label" Content="Назва" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top" Width="57"/>
-        <Label HorizontalAlignment="Left" Margin="30,65,0,0" VerticalAlignment="Top" Width="57"/>
-        <CheckBox x:Name="DoneCb" Content="Виконано" HorizontalAlignment="Left" Margin="195,33,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,-1.333"/>
-        <TextBox x:Name="Description_TextBox" HorizontalAlignment="Left" Height="123" Margin="67,69,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="202"/>
-        <Label x:Name="Description_Label" Content="Опис" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="57"/>
+        <TextBox x:Name="Name_TextBox" HorizontalAlignment="Left" Height="23" Margin="87,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="100"/>
+        <Label x:Name="Name_Label" Content="Title" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top" Width="57"/>
+        <CheckBox x:Name="DoneCb" Content="Done" HorizontalAlignment="Left" Margin="195,33,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,-1.333"/>
+        <TextBox x:Name="Description_TextBox" HorizontalAlignment="Left" Height="123" Margin="87,69,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="182"/>
+        <Label x:Name="Description_Label" Content="Description" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="77"/>
         <Button x:Name="SaveButton" Content="Confirm" HorizontalAlignment="Left" Margin="194,263,0,0" VerticalAlignment="Top" Width="75" Click="SaveButton_Click"/>
         <!--<StackPanel Name="ImagePanel" Drop="ImagePanel_Drop" AllowDrop="true" Margin="67,246,64,0" RenderTransformOrigin="0.09,1.677">
 
         </StackPanel>-->
-        <GroupBox Header="GroupBox"  Drop="ImagePanel_Drop" AllowDrop="true" HorizontalAlignment="Left" Height="66" Margin="67,192,0,0" VerticalAlignment="Top" Width="202"/>
     </Grid>
 </Window>

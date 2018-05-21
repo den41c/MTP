@@ -71,6 +71,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Calendar.cs" />
     <Compile Include="Classes\Group.cs" />
     <Compile Include="Classes\SqlClient.cs" />
     <Compile Include="Classes\ToDoTask.cs" />
