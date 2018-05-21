@@ -55,10 +55,15 @@ namespace stp
 
         private void SetTasksListBox(int GroupCode)
         {
-            //TaskListBox.Items.Clear();
-            GroupListBox.SelectedItem = list_group.Find(w => (w.GroupId == GroupCode));
-            TaskListBox.ItemsSource = list_group.Find(w => (w.GroupId == GroupCode) && (w.task_list != null)).task_list;
+            if (list_group.Count > 0)
+            {
+                GroupListBox.SelectedItem = list_group.Find(w => (w.GroupId == GroupCode));
+                TaskListBox.ItemsSource = list_group.Find(w => (w.GroupId == GroupCode) && (w.task_list != null)).task_list;
+            }  
+           
             TaskListBox.Items.Refresh();
+            
+           
         }
 
        
@@ -115,7 +120,15 @@ namespace stp
             //GroupListBox.ItemContainerGenerator.ContainerFromIndex(1);
             RemoveGroupButton.IsEnabled = false;
             TaskTextBox.IsEnabled = false;
-            SetTasksListBox(list_group.Last().GroupId);
+            if (list_group.Count > 0)
+            {
+                SetTasksListBox(list_group.Last().GroupId);
+            }
+            else
+            {
+                SetTasksListBox(0);
+            }
+           
             //TaskListBox.Items.Clear(); 
         }
   

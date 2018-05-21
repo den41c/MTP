@@ -18,11 +18,6 @@ namespace stp
         static string ApplicationName = "Google Calendar API .NET Quickstart";
         static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
 
-       static void STP_ZALUPA()
-        {
-            
-        }
-
         static void DoIt()
         {
             UserCredential credential;
