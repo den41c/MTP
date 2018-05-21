@@ -17,7 +17,7 @@
                     <ListView x:Name="TaskListBox" HorizontalAlignment="Left" Height="374" Margin="269,10,-217,-111" VerticalAlignment="Top" Width="240" SelectionChanged="TaskListBox_SelectionChanged">
                         <ListView.ItemTemplate>
                             <HierarchicalDataTemplate>
-                                <CheckBox Content="{Binding TaskName}" IsChecked="{Binding Done}" Uid="" PreviewMouseDoubleClick="CheckBox_PreviewMouseDoubleClick"/>
+                                <CheckBox Content="{Binding TaskName}" IsChecked="{Binding Done}" Tag="{Binding Path=TaskId}" PreviewMouseDoubleClick="CheckBox_PreviewMouseDoubleClick"/>
                             </HierarchicalDataTemplate>
                         </ListView.ItemTemplate>
                         <StackPanel>

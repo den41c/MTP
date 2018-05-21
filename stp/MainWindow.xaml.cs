@@ -143,21 +143,22 @@ namespace stp
             var group = (Group)item;
          
 
-            var cmd = SqlClient.CreateCommand(@"insert into Tasks (taskname, groupid, done) 
-                                                    values(@taskname,@groupid,@done);
+            var cmd = SqlClient.CreateCommand(@"insert into Tasks (taskname, groupid, done, description) 
+                                                    values(@taskname,@groupid,@done,@description);
                                                 select last_insert_rowid();
                                                     ");
             cmd.Parameters.Add(new SQLiteParameter("taskname", TaskTextBox.Text));
             cmd.Parameters.Add(new SQLiteParameter("groupid", group.GroupId));
             cmd.Parameters.Add(new SQLiteParameter("done", "-"));
-
-            var newTaskId = cmd.ExecuteNonQuery();
-            list_group.Find(w=>w.GroupId == group.GroupId).task_list.Add(new Classes.ToDoTask()
+            cmd.Parameters.Add(new SQLiteParameter("description", "")); 
+            var newTaskId = (int)(long)cmd.ExecuteScalar();
+            list_group.Find(w=>w.GroupId == group.GroupId).task_list.Add(new ToDoTask()
             {
                 TaskName = TaskTextBox.Text,
                 TaskId = newTaskId
             });
             SetTasksListBox(group.GroupId);      
+            
             TaskTextBox.Text = string.Empty;
         }
 
@@ -166,17 +167,17 @@ namespace stp
             var taskItemToRemove = TaskListBox.SelectedItem;
             var groupItemToRemove = GroupListBox.SelectedItem;
 
-            if (taskItemToRemove == null || !(taskItemToRemove is Classes.ToDoTask))
+            if (taskItemToRemove == null || !(taskItemToRemove is ToDoTask))
             {
                 return;
             }
-            if (groupItemToRemove == null || !(groupItemToRemove is Classes.Group))
+            if (groupItemToRemove == null || !(groupItemToRemove is Group))
             {
                 return;
             }
 
-            var taskToRemove = (Classes.ToDoTask)taskItemToRemove;
-            var groupToRemove = (Classes.Group)groupItemToRemove;
+            var taskToRemove = (ToDoTask)taskItemToRemove;
+            var groupToRemove = (Group)groupItemToRemove;
 
             var cmd = SqlClient.CreateCommand(@"delete from tasks where groupid = @groupid and taskid = @taskid;");
 
@@ -203,15 +204,16 @@ namespace stp
         {
             var cb = (CheckBox)sender;
             cb.IsChecked = !cb.IsChecked;
+            
             //var t = DependencyProperty.Register("d",)
             //cb.
             //cb.SetValue(new DependencyProperty.,1);
             var task = (ToDoTask)TaskListBox.SelectedItem;
 
-            var Editform = new Edit() { ThisTask = task };
+            var Editform = new Edit((int)cb.Tag);
             Editform.Show();
 
-            this.Hide();
+            this.Close();
         }
     }
 }

@@ -10,7 +10,8 @@ namespace stp.Classes
     {
         public string TaskName { get; set; }
         
-        public int TaskId;
+        public int TaskId { get; set;}
+        public string Desc;
         public bool done;
         public bool Done
         {
