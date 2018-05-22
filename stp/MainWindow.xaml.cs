@@ -231,9 +231,9 @@ namespace stp
             this.Close();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Grid_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            Calendars.SignIn();
+            Calendars.Authorization();
         }
     }
 }

@@ -38,8 +38,12 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Calendar">
-                <Grid Background="#FFE5E5E5">
-                    <Button Content="Connect to Google Calendar" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="169" Click="Button_Click"/>
+                <Grid Background="#FFE5E5E5" ContextMenuOpening="Grid_ContextMenuOpening">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="18*"/>
+                        <ColumnDefinition Width="653*"/>
+                    </Grid.ColumnDefinitions>
+                    <DataGrid Grid.Column="1" HorizontalAlignment="Left" Height="131" Margin="43,43,0,0" VerticalAlignment="Top" Width="505"/>
                 </Grid>
             </TabItem>
         </TabControl>
