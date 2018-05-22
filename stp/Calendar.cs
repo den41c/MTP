@@ -16,7 +16,7 @@ namespace stp
     static class Calendars
     {
         static string ApplicationName = "Google Calendar API .NET Quickstart";
-        static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
+        static string[] Scopes = { CalendarService.Scope.Calendar };
 
         public static void SignIn()
         {
