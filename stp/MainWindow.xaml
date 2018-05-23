@@ -9,11 +9,12 @@
 
     <Grid Margin="0,0,0,-6">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="431*"/>
+            <ColumnDefinition Width="295*"/>
+            <ColumnDefinition Width="137*"/>
             <ColumnDefinition Width="257*"/>
         </Grid.ColumnDefinitions>
         <!--<ListBox x:Name="ListGroup1" HorizontalAlignment="Left" Height="374" Margin="289,10,0,0" VerticalAlignment="Top" Width="192"/>-->
-        <TabControl HorizontalAlignment="Left" Height="464" Margin="10,10,0,0" VerticalAlignment="Top" Width="676" Grid.ColumnSpan="2">
+        <TabControl HorizontalAlignment="Left" Height="464" Margin="10,10,0,0" VerticalAlignment="Top" Width="676" Grid.ColumnSpan="3">
             <TabItem Header="ToDo">
                 <Grid Background="#FFE5E5E5" Margin="0,0,0,10">
                     <GridSplitter HorizontalAlignment="Left" Height="419" Margin="258,-10,0,-136" VerticalAlignment="Top" Width="6"/>
@@ -43,7 +44,13 @@
                         <ColumnDefinition Width="18*"/>
                         <ColumnDefinition Width="653*"/>
                     </Grid.ColumnDefinitions>
-                    <DataGrid Grid.Column="1" HorizontalAlignment="Left" Height="131" Margin="43,43,0,0" VerticalAlignment="Top" Width="505"/>
+                    <DataGrid Grid.Column="1" HorizontalAlignment="Left" Height="130" Margin="32,192,0,0" VerticalAlignment="Top" Width="506"/>
+                    <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="249,10,0,0" VerticalAlignment="Top" Width="120">
+                        <ComboBoxItem IsSelected="True">Daily</ComboBoxItem>
+                        <ComboBoxItem>Weekly</ComboBoxItem>
+                        <ComboBoxItem>Monthly</ComboBoxItem>
+                    </ComboBox>
+
                 </Grid>
             </TabItem>
         </TabControl>
