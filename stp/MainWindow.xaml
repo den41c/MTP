@@ -48,7 +48,42 @@
                         <ComboBoxItem>Weekly</ComboBoxItem>
                         <ComboBoxItem>Monthly</ComboBoxItem>
                     </ComboBox>
-                    <Grid Name="Monthly" Margin="27,54,35,40">
+                    <Grid Visibility="Visible" Name="Daily" Margin="27,54,35,40">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="6*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                        </Grid.RowDefinitions>
+                        <Label>Time</Label>
+                        <Label Grid.Column="1">Events</Label>
+                        <Label Grid.Row="1">00:00</Label>
+                        <Label Grid.Row="2">02:00</Label>
+                        <Label Grid.Row="3">04:00</Label>
+                        <Label Grid.Row="4">06:00</Label>
+                        <Label Grid.Row="5">08:00</Label>
+                        <Label Grid.Row="6">10:00</Label>
+                        <Label Grid.Row="7">12:00</Label>
+                        <Label Grid.Row="8">14:00</Label>
+                        <Label Grid.Row="9">16:00</Label>
+                        <Label Grid.Row="10">18:00</Label>
+                        <Label Grid.Row="11">20:00</Label>
+                        <Label Grid.Row="12">22:00</Label>
+                    </Grid>
+                    <Grid Visibility="Hidden" Name="Monthly" Margin="27,54,35,40">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1*" />
@@ -85,6 +120,7 @@
                         <Button Grid.Column="2" Grid.Row="2">Button 9</Button>
                         -->
                     </Grid>
+
                 </Grid>
             </TabItem>
         </TabControl>
