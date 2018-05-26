@@ -48,7 +48,7 @@
                         <ComboBoxItem>Weekly</ComboBoxItem>
                         <ComboBoxItem>Monthly</ComboBoxItem>
                     </ComboBox>
-                    <Grid Visibility="Visible" Name="Daily" Margin="27,54,35,40">
+                    <Grid Visibility="Hidden" Name="Daily" Margin="27,54,35,40">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="6*" />
@@ -83,6 +83,41 @@
                         <Label Grid.Row="11">20:00</Label>
                         <Label Grid.Row="12">22:00</Label>
                     </Grid>
+                    <Grid Visibility="Visible" Name="Weekly" Margin="27,54,35,40">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" Content="Time"/>
+                        <Label Grid.Column="1" Content="Sun"/>
+                        <Label Grid.Column="2" Content="Mon"/>
+                        <Label Grid.Column="3" Content="Tue"/>
+                        <Label Grid.Column="4" Content="Wen"/>
+                        <Label Grid.Column="5" Content="Tue"/>
+                        <Label Grid.Column="6" Content="Fri"/>
+                        <Label Grid.Column="7" Content="Sat"/>
+                        <Label Grid.Row="1">00:00</Label>
+                        <Label Grid.Row="2">04:00</Label>
+                        <Label Grid.Row="3">08:00</Label>
+                        <Label Grid.Row="4">12:00</Label>
+                        <Label Grid.Row="5">16:00</Label>
+                        <Label Grid.Row="6">20:00</Label>
+                    </Grid>
                     <Grid Visibility="Hidden" Name="Monthly" Margin="27,54,35,40">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
@@ -109,18 +144,7 @@
                         <Label Grid.Column="4" Content="Tue"/>
                         <Label Grid.Column="5" Content="Fri"/>
                         <Label Grid.Column="6" Content="Sat"/>
-                        <!--<Button>Button 1</Button>
-                        <Button Grid.Column="1">Button 2</Button>
-                        <Button Grid.Column="2">Button 3</Button>
-                        <Button Grid.Row="1">Button 4</Button>
-                        <Button Grid.Column="1" Grid.Row="1">Button 5</Button>
-                        <Button Grid.Column="2" Grid.Row="1">Button 6</Button>
-                        <Button Grid.Row="2">Button 7</Button>
-                        <Button Grid.Column="1" Grid.Row="2">Button 8</Button>
-                        <Button Grid.Column="2" Grid.Row="2">Button 9</Button>
-                        -->
                     </Grid>
-
                 </Grid>
             </TabItem>
         </TabControl>
