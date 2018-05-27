@@ -11,7 +11,7 @@ namespace stp.Classes
         //private string group_name;
         public List<ToDoTask> task_list;
         public string GroupName { get; set; }
-
+        public string stored_name_of_task;
         private int group_id;
         public int GroupId
         {
@@ -21,7 +21,7 @@ namespace stp.Classes
                 group_id = value;
                 task_list = new List<ToDoTask>();
                
-                var cmd = SqlClient.CreateCommand("select taskid, taskname, done, description from TASKS where GROUPID = @groupid");
+                var cmd = SqlClient.CreateCommand("select taskid, taskname, done, description, deadline from TASKS where GROUPID = @groupid");
                 cmd.Parameters.Add(new SQLiteParameter("groupid", value));
                 
                 using (var reader = cmd.ExecuteReader()) {
@@ -32,18 +32,18 @@ namespace stp.Classes
                         {
                             TaskId = (int)(long)reader["taskid"],//reader.GetInt32(0),
                             TaskName = (string)reader["taskname"],
-                            done = (string)reader["done"] == "+"
+                            done = (string)reader["done"] == "+",
+                            Desc = (string)reader["description"],
+                            Deadline = reader.IsDBNull(4)? null :(DateTime?)reader["deadline"]
                         });
                     }
                     
                 }
-                
-
             }
         }
         public override string ToString()
         {
-            return GroupName;
+            return GroupName+"("+ task_list.Count.ToString() + ")";
         }
     }
 }

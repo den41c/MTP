@@ -22,12 +22,14 @@ namespace stp
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        private bool skipValueChanged;
         private List<Group> list_group = new List<Group>();
         //private List<TextBox> list_group_text_boxs = new List<TextBox>();
         public MainWindow()
         {
             InitializeComponent();
+
+            SetVisible();
             TaskListBox.MouseDoubleClick += TaskListBox_MouseDoubleClick;
 
             TaskListBox.Items.Clear();
@@ -41,7 +43,8 @@ namespace stp
             {
                 list_group.Add(new Group() {
                     GroupId = (int)(long)reader["groupid"],
-                    GroupName =  (string)reader["groupname"],                 
+                    GroupName = (string)reader["groupname"],
+                    stored_name_of_task = string.Empty
                 });
             }
             
@@ -72,14 +75,21 @@ namespace stp
 
         private void GroupListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
             RemoveGroupButton.IsEnabled = true;
             TaskTextBox.IsEnabled = true;
             var group = (Group)GroupListBox.SelectedItem;
             if (group != null)
             {
                 SetTasksListBox(group.GroupId);
+                if (list_group.Count > 0 )
+                {
+                    TaskListBox.SelectedItem = list_group.Find(w => w.GroupId == group.GroupId).task_list.FirstOrDefault();
+                }
+
+                TaskTextBox.Text = group.stored_name_of_task;
             }
-            
+           
         }
 
         private void AddGroup_Click(object sender, RoutedEventArgs e)
@@ -119,6 +129,7 @@ namespace stp
 
             
             GroupListBox.Items.Refresh();
+            
             //GroupListBox.ItemContainerGenerator.ContainerFromIndex(1);
             RemoveGroupButton.IsEnabled = false;
             TaskTextBox.IsEnabled = false;
@@ -141,6 +152,13 @@ namespace stp
 
         private void TaskTextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
+            var item = GroupListBox.SelectedItem;
+            if (item == null || !(item is Group))
+            {
+                return;
+            }
+            var group = (Group)item;
+            group.stored_name_of_task = TaskTextBox.Text;
             AddTaskButton.IsEnabled = TaskTextBox.Text != string.Empty;
             if (!AddTaskButton.IsEnabled)
             {
@@ -167,13 +185,14 @@ namespace stp
             cmd.Parameters.Add(new SQLiteParameter("done", "-"));
             cmd.Parameters.Add(new SQLiteParameter("description", "")); 
             var newTaskId = (int)(long)cmd.ExecuteScalar();
-            list_group.Find(w=>w.GroupId == group.GroupId).task_list.Add(new ToDoTask()
+            list_group.Find(w => w.GroupId == group.GroupId).task_list.Add(new ToDoTask()
             {
                 TaskName = TaskTextBox.Text,
-                TaskId = newTaskId
+                TaskId = newTaskId,
+                Deadline = null
             });
-            SetTasksListBox(group.GroupId);      
-            
+            SetTasksListBox(group.GroupId);
+            GroupListBox.Items.Refresh();
             TaskTextBox.Text = string.Empty;
         }
 
@@ -208,32 +227,120 @@ namespace stp
 
             TaskTextBox.IsEnabled = false;
             //TaskListBox.Items.Clear(); 
+            GroupListBox.Items.Refresh();
         }
 
         private void TaskListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             RemoveTaskButton.IsEnabled = true;
-        }
-
-        private void CheckBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var cb = (CheckBox)sender;
-            cb.IsChecked = !cb.IsChecked;
             
-            //var t = DependencyProperty.Register("d",)
-            //cb.
-            //cb.SetValue(new DependencyProperty.,1);
-            var task = (ToDoTask)TaskListBox.SelectedItem;
-
-            var Editform = new Edit((int)cb.Tag);
-            Editform.Show();
-
-            this.Close();
+            if (SetVisible())
+                SetTaskInfo();
         }
+
+        //private void CheckBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        //{
+        //    var cb = (CheckBox)sender;
+        //    cb.IsChecked = !cb.IsChecked;
+            
+        //    //var t = DependencyProperty.Register("d",)
+        //    //cb.
+        //    //cb.SetValue(new DependencyProperty.,1);
+        //    var task = (ToDoTask)TaskListBox.SelectedItem;
+
+        //    var Editform = new Edit((int)cb.Tag);
+        //    Editform.Show();
+
+        //    this.Close();
+        //}
 
         private void Grid_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             Calendars.Authorization();
+        }
+
+        private void Name_TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!skipValueChanged)
+            {
+                list_group.Find(w => w.GroupId == SelectedGroup().GroupId).
+                task_list.Find(w => w.TaskId == SelectedTask().TaskId).TaskName = Name_TextBox.Text;
+                SaveChanges();
+            }
+            
+        }
+        private void SaveChanges()
+        {
+
+            var cmd = SqlClient.CreateCommand(@"update Tasks set 
+                                                        taskname = @taskname,
+                                                        deadline = @deadline,
+                                                        description = @description
+                                                where taskid = @taskid
+                                                    ");
+            cmd.Parameters.Add(new SQLiteParameter("taskname", Name_TextBox.Text));           
+            cmd.Parameters.Add(new SQLiteParameter("description", Description_TextBox.Text));
+            cmd.Parameters.Add(new SQLiteParameter("deadline", Deadline.SelectedDate));
+            cmd.Parameters.Add(new SQLiteParameter("taskid", SelectedTask().TaskId));
+            cmd.ExecuteNonQuery();
+            TaskListBox.Items.Refresh();
+        }
+        private ToDoTask SelectedTask()
+        {
+            return (ToDoTask)TaskListBox.SelectedItem != null ?
+                (ToDoTask)TaskListBox.SelectedItem
+                : new ToDoTask();
+            //return (ToDoTask)TaskListBox.SelectedItem;
+        }
+
+        private Group SelectedGroup()
+        {
+            return (Group)GroupListBox.SelectedItem != null ?
+                 (Group)GroupListBox.SelectedItem
+                : new Group();
+            //return (Group)GroupListBox.SelectedItem;
+        }
+
+        private void SetTaskInfo()
+        {
+            //var eventn = Name_TextBox.TextChanged;
+            skipValueChanged = true;
+            Name_TextBox.Text = SelectedTask().TaskName;
+            Description_TextBox.Text = SelectedTask().Desc;
+            Deadline.SelectedDate = SelectedTask().Deadline;
+            skipValueChanged = false;
+            
+        }
+
+        private void Description_TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!skipValueChanged)
+            {
+                list_group.Find(w => w.GroupId == SelectedGroup().GroupId).
+                task_list.Find(w => w.TaskId == SelectedTask().TaskId).Desc = Description_TextBox.Text;
+                SaveChanges();
+            }
+        }
+        private bool SetVisible()
+        {
+            var visible = SelectedTask().TaskId == 0 ? Visibility.Hidden : Visibility.Visible;
+            Name_Label.Visibility = visible;
+            Name_TextBox.Visibility = visible;
+            Description_Label.Visibility = visible;
+            Description_TextBox.Visibility = visible;
+            Deadline.Visibility = visible;
+            Deadline_Label.Visibility = visible;
+            return visible == Visibility.Visible;
+        }
+
+        private void Deadline_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!skipValueChanged)
+            {
+                list_group.Find(w => w.GroupId == SelectedGroup().GroupId).
+               task_list.Find(w => w.TaskId == SelectedTask().TaskId).Deadline = (DateTime?)Deadline.SelectedDate;
+                SaveChanges();
+            }
         }
     }
 }

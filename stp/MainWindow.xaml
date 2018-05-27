@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:stp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="506" Width="696">
+        Title="MainWindow" Height="538" Width="776">
 
     <Grid Margin="0,0,0,-6">
         <Grid.ColumnDefinitions>
@@ -14,15 +14,19 @@
             <ColumnDefinition Width="257*"/>
         </Grid.ColumnDefinitions>
         <!--<ListBox x:Name="ListGroup1" HorizontalAlignment="Left" Height="374" Margin="289,10,0,0" VerticalAlignment="Top" Width="192"/>-->
-        <TabControl HorizontalAlignment="Left" Height="464" Margin="10,10,0,0" VerticalAlignment="Top" Width="676" Grid.ColumnSpan="3">
-            <TabItem Header="ToDo">
+        <TabControl HorizontalAlignment="Left" Height="467" Margin="10,10,0,0" VerticalAlignment="Top" Width="748" Grid.ColumnSpan="3">
+            <TabItem Header="Tasks">
                 <Grid Background="#FFE5E5E5" Margin="0,0,0,10">
-                    <GridSplitter HorizontalAlignment="Left" Height="419" Margin="258,-10,0,-136" VerticalAlignment="Top" Width="6"/>
-                    <ListBox x:Name="GroupListBox" HorizontalAlignment="Left" Height="374" Margin="10,10,0,-111" VerticalAlignment="Top" Width="231" TextSearch.TextPath="Name" IsTextSearchEnabled="True" />
-                    <ListView x:Name="TaskListBox" HorizontalAlignment="Left" Height="374" Margin="269,10,-217,-111" VerticalAlignment="Top" Width="240" SelectionChanged="TaskListBox_SelectionChanged">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="75*"/>
+                        <ColumnDefinition Width="667*"/>
+                    </Grid.ColumnDefinitions>
+                    <GridSplitter HorizontalAlignment="Left" Height="419" Margin="183,-10,0,0" VerticalAlignment="Top" Width="6" Grid.Column="1"/>
+                    <ListBox x:Name="GroupListBox" HorizontalAlignment="Left" Height="374" Margin="10,10,0,0" VerticalAlignment="Top" Width="231" TextSearch.TextPath="Name" IsTextSearchEnabled="True" Grid.ColumnSpan="2" />
+                    <ListView x:Name="TaskListBox" HorizontalAlignment="Left" Height="374" Margin="194,10,0,0" VerticalAlignment="Top" Width="207" SelectionChanged="TaskListBox_SelectionChanged" Grid.Column="1">
                         <ListView.ItemTemplate>
                             <HierarchicalDataTemplate>
-                                <CheckBox Content="{Binding TaskName}" IsChecked="{Binding Done}" Tag="{Binding Path=TaskId}" PreviewMouseDoubleClick="CheckBox_PreviewMouseDoubleClick"/>
+                                <CheckBox Content="{Binding TaskName}" IsChecked="{Binding Done}" Tag="{Binding Path=TaskId}"/>
                             </HierarchicalDataTemplate>
                         </ListView.ItemTemplate>
                         <StackPanel>
@@ -30,25 +34,32 @@
 
                         </StackPanel>
                     </ListView>
-                    <Button x:Name="AddGroupButton" Content="Add" HorizontalAlignment="Left" Margin="110,388,0,0" VerticalAlignment="Top" Width="65" Click="AddGroup_Click" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
-                    <Button x:Name="RemoveGroupButton" Content="Remove" HorizontalAlignment="Left" Margin="180,388,0,0" VerticalAlignment="Top" Width="61" Click="RemoveGroup_Click" IsEnabled="False" Height="20"/>
-                    <TextBox x:Name="GroupTextBox" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="95" Margin="10,388,0,0" SelectionChanged="GroupTextBox_SelectionChanged"/>
-                    <Button x:Name="AddTaskButton" Content="Add" HorizontalAlignment="Left" Margin="378,389,0,0" VerticalAlignment="Top" Width="65" RenderTransformOrigin="0.5,0.5" IsEnabled="False" Click="AddTaskButton_Click"/>
-                    <Button x:Name="RemoveTaskButton" Content="Remove" HorizontalAlignment="Left" Margin="448,389,0,0" VerticalAlignment="Top" Width="61" IsEnabled="False" Height="20" Click="RemoveTaskButton_Click"/>
-                    <TextBox x:Name="TaskTextBox" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="95" Margin="278,389,0,0" IsEnabled="False" SelectionChanged="TaskTextBox_SelectionChanged"/>
+                    <Button x:Name="AddGroupButton" Content="Add" HorizontalAlignment="Left" Margin="35,388,0,0" VerticalAlignment="Top" Width="65" Click="AddGroup_Click" RenderTransformOrigin="0.5,0.5" IsEnabled="False" Grid.Column="1"/>
+                    <Button x:Name="RemoveGroupButton" Content="Remove" HorizontalAlignment="Left" Margin="105,388,0,0" VerticalAlignment="Top" Width="61" Click="RemoveGroup_Click" IsEnabled="False" Height="20" Grid.Column="1"/>
+                    <TextBox x:Name="GroupTextBox" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="95" Margin="10,388,0,0" SelectionChanged="GroupTextBox_SelectionChanged" Grid.ColumnSpan="2"/>
+                    <Button x:Name="AddTaskButton" Content="Add" HorizontalAlignment="Left" Margin="303,389,0,0" VerticalAlignment="Top" Width="37" RenderTransformOrigin="0.5,0.5" IsEnabled="False" Click="AddTaskButton_Click" Grid.Column="1"/>
+                    <Button x:Name="RemoveTaskButton" Content="Remove" HorizontalAlignment="Left" Margin="345,389,0,0" VerticalAlignment="Top" Width="56" IsEnabled="False" Height="20" Click="RemoveTaskButton_Click" Grid.Column="1"/>
+                    <TextBox x:Name="TaskTextBox" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="95" Margin="203,389,0,0" IsEnabled="False" SelectionChanged="TaskTextBox_SelectionChanged" Grid.Column="1"/>
+                    <TextBox x:Name="Name_TextBox" HorizontalAlignment="Left" Height="23" Margin="489,15,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="85" TextChanged="Name_TextBox_TextChanged" Grid.Column="1"/>
+                    <Label x:Name="Name_Label" Content="Title" HorizontalAlignment="Left" Margin="418,12,0,0" VerticalAlignment="Top" Width="49" Grid.Column="1"/>
+                    <TextBox x:Name="Description_TextBox" HorizontalAlignment="Left" Height="123" Margin="489,54,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="150" TextChanged="Description_TextBox_TextChanged" Grid.Column="1"/>
+                    <Label x:Name="Description_Label" Content="Description" HorizontalAlignment="Left" Margin="418,54,0,0" VerticalAlignment="Top" Width="71" Grid.Column="1"/>
+                    <Label x:Name="Deadline_Label" Content="Deadline" HorizontalAlignment="Left" Margin="418,192,0,0" VerticalAlignment="Top" Width="71" Grid.Column="1"/>
+                    <DatePicker x:Name="Deadline" HorizontalAlignment="Left" Margin="489,192,0,0" VerticalAlignment="Top" SelectedDateChanged="Deadline_SelectedDateChanged" Grid.Column="1"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Calendar">
                 <Grid Background="#FFE5E5E5" ContextMenuOpening="Grid_ContextMenuOpening">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="653*"/>
+                        <ColumnDefinition Width="9*"/>
+                        <ColumnDefinition Width="326*"/>
                     </Grid.ColumnDefinitions>
                     <ComboBox HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2">
                         <ComboBoxItem IsSelected="True">Daily</ComboBoxItem>
                         <ComboBoxItem>Weekly</ComboBoxItem>
                         <ComboBoxItem>Monthly</ComboBoxItem>
                     </ComboBox>
-                    <Grid Visibility="Visible" Name="Daily" Margin="27,54,35,40">
+                    <Grid Visibility="Visible" Name="Daily" Margin="9,54,35,40" Grid.Column="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="6*" />
@@ -83,7 +94,7 @@
                         <Label Grid.Row="11">20:00</Label>
                         <Label Grid.Row="12">22:00</Label>
                     </Grid>
-                    <Grid Visibility="Hidden" Name="Weekly" Margin="27,54,35,40">
+                    <Grid Visibility="Hidden" Name="Weekly" Margin="9,54,35,40" Grid.Column="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1*" />
@@ -118,7 +129,7 @@
                         <Label Grid.Row="5">16:00</Label>
                         <Label Grid.Row="6">20:00</Label>
                     </Grid>
-                    <Grid Visibility="Hidden" Name="Monthly" Margin="27,54,35,40">
+                    <Grid Visibility="Hidden" Name="Monthly" Margin="9,54,35,40" Grid.Column="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1*" />

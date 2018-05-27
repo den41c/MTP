@@ -13,6 +13,7 @@ namespace stp.Classes
         public int TaskId { get; set;}
         public string Desc;
         public bool done;
+        public DateTime? Deadline { get; set; }
         public bool Done
         {
             get { return done; }
