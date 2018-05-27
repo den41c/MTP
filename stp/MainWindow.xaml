@@ -48,7 +48,7 @@
                         <ComboBoxItem>Weekly</ComboBoxItem>
                         <ComboBoxItem>Monthly</ComboBoxItem>
                     </ComboBox>
-                    <Grid Visibility="Hidden" Name="Daily" Margin="27,54,35,40">
+                    <Grid Visibility="Visible" Name="Daily" Margin="27,54,35,40">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="6*" />
@@ -83,7 +83,7 @@
                         <Label Grid.Row="11">20:00</Label>
                         <Label Grid.Row="12">22:00</Label>
                     </Grid>
-                    <Grid Visibility="Visible" Name="Weekly" Margin="27,54,35,40">
+                    <Grid Visibility="Hidden" Name="Weekly" Margin="27,54,35,40">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1*" />
