@@ -342,5 +342,29 @@ namespace stp
                 SaveChanges();
             }
         }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {          
+            switch (((sender as ComboBox).SelectedItem as ComboBoxItem).Content as string)
+            {
+                case "Daily":
+                    Daily.Visibility = Visibility.Visible;
+                    Weekly.Visibility = Visibility.Hidden;
+                    Monthly.Visibility = Visibility.Hidden;
+                    break;
+                case "Weekly":
+                    Daily.Visibility = Visibility.Hidden;
+                    Weekly.Visibility = Visibility.Visible;
+                    Monthly.Visibility = Visibility.Hidden;
+                    break;
+                case "Monthly":
+                    Daily.Visibility = Visibility.Hidden;
+                    Weekly.Visibility = Visibility.Hidden;
+                    Monthly.Visibility = Visibility.Visible;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

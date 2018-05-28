@@ -54,7 +54,7 @@
                         <ColumnDefinition Width="9*"/>
                         <ColumnDefinition Width="326*"/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2">
+                    <ComboBox Name ="comboBoxCalendarView" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2" SelectionChanged="ComboBox_SelectionChanged">
                         <ComboBoxItem IsSelected="True">Daily</ComboBoxItem>
                         <ComboBoxItem>Weekly</ComboBoxItem>
                         <ComboBoxItem>Monthly</ComboBoxItem>
