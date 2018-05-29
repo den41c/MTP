@@ -5,16 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:stp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="538" Width="776">
+        Title="MainWindow" Height="538" Width="776" Loaded="Window_Loaded">
 
     <Grid Margin="0,0,0,-6">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="295*"/>
-            <ColumnDefinition Width="137*"/>
-            <ColumnDefinition Width="257*"/>
+            <ColumnDefinition Width="64*"/>
+            <ColumnDefinition Width="266*"/>
+            <ColumnDefinition Width="153*"/>
+            <ColumnDefinition Width="286*"/>
         </Grid.ColumnDefinitions>
         <!--<ListBox x:Name="ListGroup1" HorizontalAlignment="Left" Height="374" Margin="289,10,0,0" VerticalAlignment="Top" Width="192"/>-->
-        <TabControl HorizontalAlignment="Left" Height="467" Margin="10,10,0,0" VerticalAlignment="Top" Width="748" Grid.ColumnSpan="3">
+        <TabControl HorizontalAlignment="Left" Height="467" Margin="10,10,0,0" VerticalAlignment="Top" Width="748" Grid.ColumnSpan="4">
             <TabItem Header="Tasks">
                 <Grid Background="#FFE5E5E5" Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>

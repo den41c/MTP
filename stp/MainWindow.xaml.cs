@@ -366,5 +366,45 @@ namespace stp
                     break;
             }
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < 13; i++)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    Border border = new Border();
+                    border.BorderThickness = new Thickness(1.0);
+                    border.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+                    Grid.SetRow(border, i);
+                    Grid.SetColumn(border, j);
+                    Daily.Children.Add(border);
+                }
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    Border border = new Border();
+                    border.BorderThickness = new Thickness(1.0);
+                    border.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+                    Grid.SetRow(border, i);
+                    Grid.SetColumn(border, j);
+                    Weekly.Children.Add(border);
+                }
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    Border border = new Border();
+                    border.BorderThickness = new Thickness(1.0);
+                    border.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+                    Grid.SetRow(border, i);
+                    Grid.SetColumn(border, j);
+                    Monthly.Children.Add(border);
+                }
+            }
+        }
     }
 }
