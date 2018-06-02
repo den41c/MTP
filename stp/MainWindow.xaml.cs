@@ -15,6 +15,12 @@ using System.Windows.Shapes;
 using stp.Classes;
 using System.Linq;
 using System.Data.SQLite;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Calendar.v3;
+using Google.Apis.Calendar.v3.Data;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
+
 namespace stp
 {
     /// <summary>
@@ -256,7 +262,7 @@ namespace stp
 
         private void Grid_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            Calendars.Authorization();
+            
         }
 
         private void Name_TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -369,6 +375,7 @@ namespace stp
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            //day
             for (int i = 0; i < 13; i++)
             {
                 for (int j = 0; j < 2; j++)
@@ -380,6 +387,20 @@ namespace stp
                     Grid.SetColumn(border, j);
                     Daily.Children.Add(border);
                 }
+            }
+            //week
+            DateTime dateTime = DateTime.Now;
+            while (dateTime.DayOfWeek != DayOfWeek.Sunday)
+            {
+                dateTime = dateTime.AddDays(-1);
+            }
+            for (int i = 1; i < 8; i++)
+            {
+                Label label = new Label();
+                label.Content = dateTime.ToString("ddd") + ' ' + dateTime.ToShortDateString();
+                dateTime = dateTime.AddDays(1);
+                Grid.SetColumn(label, i);
+                Weekly.Children.Add(label);
             }
             for (int i = 0; i < 7; i++)
             {
@@ -393,6 +414,29 @@ namespace stp
                     Weekly.Children.Add(border);
                 }
             }
+            //month
+            dateTime = DateTime.Now;
+            int currentMonth = dateTime.Month;
+            while (dateTime.Day != 1)
+            {
+                dateTime = dateTime.AddDays(-1);
+            }
+            int row = 1, col = (int)dateTime.DayOfWeek;
+            while(dateTime.Month == currentMonth)
+            {
+                Label label = new Label();
+                label.Content = dateTime.ToShortDateString();
+                Grid.SetColumn(label, col);
+                Grid.SetRow(label, row);
+                col++;
+                if (col == 7)
+                {
+                    col = 0;
+                    row++;
+                }
+                Monthly.Children.Add(label);
+                dateTime = dateTime.AddDays(1);
+            }
             for (int i = 0; i < 7; i++)
             {
                 for (int j = 0; j < 7; j++)
@@ -403,6 +447,43 @@ namespace stp
                     Grid.SetRow(border, i);
                     Grid.SetColumn(border, j);
                     Monthly.Children.Add(border);
+                }
+            }
+            Calendars.Authorization();
+            Calendars.LoadEvents();
+            if (Calendars.events.Items != null && Calendars.events.Items.Count > 0)
+            {
+                foreach (var eventItem in Calendars.events.Items)
+                {
+                    DateTime? when = eventItem.Start.DateTime;
+                    dateTime = when.Value;
+                    if (DateTime.Now.Month != dateTime.Month || DateTime.Now.Year != dateTime.Year)
+                    {
+                        continue;
+                    }
+                    while (dateTime.Day != 1)
+                    {
+                        dateTime = dateTime.AddDays(-1);
+                    }
+                    int row1 = 1, col1 = (int)dateTime.DayOfWeek;
+                    while (dateTime != when.Value)
+                    {
+                        col1++;
+                        if (col1 == 7)
+                        {
+                            col1 = 0;
+                            row1++;
+                        }
+                        dateTime = dateTime.AddDays(1);
+
+                    }
+
+                    Label label = new Label();
+                    label.Content = eventItem.Summary;
+                    Grid.SetColumn(label, col1);
+                    Grid.SetRow(label, row1);
+                    Monthly.Children.Add(label);
+
                 }
             }
         }

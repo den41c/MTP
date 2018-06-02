@@ -120,7 +120,7 @@
                         <Label Grid.Column="2" Content="Mon"/>
                         <Label Grid.Column="3" Content="Tue"/>
                         <Label Grid.Column="4" Content="Wen"/>
-                        <Label Grid.Column="5" Content="Tue"/>
+                        <Label Grid.Column="5" Content="Thu"/>
                         <Label Grid.Column="6" Content="Fri"/>
                         <Label Grid.Column="7" Content="Sat"/>
                         <Label Grid.Row="1">00:00</Label>
@@ -153,7 +153,7 @@
                         <Label Grid.Column="1" Content="Mon"/>
                         <Label Grid.Column="2" Content="Tue"/>
                         <Label Grid.Column="3" Content="Wen"/>
-                        <Label Grid.Column="4" Content="Tue"/>
+                        <Label Grid.Column="4" Content="Thu"/>
                         <Label Grid.Column="5" Content="Fri"/>
                         <Label Grid.Column="6" Content="Sat"/>
                     </Grid>

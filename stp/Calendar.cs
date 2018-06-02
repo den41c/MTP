@@ -18,7 +18,8 @@ namespace stp
         static string ApplicationName = "Google Calendar API .NET Quickstart";
         static string[] Scopes = { CalendarService.Scope.Calendar };
 
-        static  UserCredential credential;
+        static public Events events;
+        static UserCredential credential;
 
         public static void Authorization()
         {
@@ -56,8 +57,8 @@ namespace stp
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
 
             // List events.
-            Events events = request.Execute();
-            
+            events = request.Execute();
+            /*
             if (events.Items != null && events.Items.Count > 0)
             {
                 foreach (var eventItem in events.Items)
@@ -67,15 +68,9 @@ namespace stp
                     {
                         when = eventItem.Start.Date;
                     }
-                    //Console.WriteLine("{0} ({1})", eventItem.Summary, when);
                 }
             }
-            else
-            {
-                //Console.WriteLine("No upcoming events found.");
-            }
-            //Console.Read();
-
+            */
         }
 
         static void DoIt()
