@@ -375,12 +375,13 @@ namespace stp
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //day
+            #region DayGrid
             for (int i = 0; i < 13; i++)
             {
                 for (int j = 0; j < 2; j++)
                 {
                     Border border = new Border();
+                    border.Name = "DayBorder" + i + j;
                     border.BorderThickness = new Thickness(1.0);
                     border.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
                     Grid.SetRow(border, i);
@@ -388,7 +389,8 @@ namespace stp
                     Daily.Children.Add(border);
                 }
             }
-            //week
+            #endregion
+            #region WeekGrid
             DateTime dateTime = DateTime.Now;
             while (dateTime.DayOfWeek != DayOfWeek.Sunday)
             {
@@ -407,6 +409,7 @@ namespace stp
                 for (int j = 0; j < 8; j++)
                 {
                     Border border = new Border();
+                    border.Name = "WeekBorder" + i + j;
                     border.BorderThickness = new Thickness(1.0);
                     border.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
                     Grid.SetRow(border, i);
@@ -414,7 +417,8 @@ namespace stp
                     Weekly.Children.Add(border);
                 }
             }
-            //month
+            #endregion
+            #region MonthGrid
             dateTime = DateTime.Now;
             int currentMonth = dateTime.Month;
             while (dateTime.Day != 1)
@@ -425,6 +429,8 @@ namespace stp
             while(dateTime.Month == currentMonth)
             {
                 Label label = new Label();
+                label.Name = "MonthLabel" + row + col;
+                this.RegisterName(label.Name, label);
                 label.Content = dateTime.ToShortDateString();
                 Grid.SetColumn(label, col);
                 Grid.SetRow(label, row);
@@ -442,6 +448,8 @@ namespace stp
                 for (int j = 0; j < 7; j++)
                 {
                     Border border = new Border();
+                    
+                    border.Name = "MonthBorder" + i + j;
                     border.BorderThickness = new Thickness(1.0);
                     border.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
                     Grid.SetRow(border, i);
@@ -449,8 +457,12 @@ namespace stp
                     Monthly.Children.Add(border);
                 }
             }
+            #endregion
+
             Calendars.Authorization();
             Calendars.LoadEvents();
+
+            #region MonthEvents
             if (Calendars.events.Items != null && Calendars.events.Items.Count > 0)
             {
                 foreach (var eventItem in Calendars.events.Items)
@@ -477,15 +489,11 @@ namespace stp
                         dateTime = dateTime.AddDays(1);
 
                     }
-
-                    Label label = new Label();
-                    label.Content = eventItem.Summary;
-                    Grid.SetColumn(label, col1);
-                    Grid.SetRow(label, row1);
-                    Monthly.Children.Add(label);
-
+                    Label label = (Label)this.FindName("MonthLabel" + row1 + col1);
+                    label.Content += "\n" + eventItem.Summary;
                 }
             }
+            #endregion
         }
     }
 }
