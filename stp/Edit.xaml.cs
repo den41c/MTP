@@ -59,13 +59,16 @@ namespace stp
             var cmd = SqlClient.CreateCommand(@"update Tasks set 
                                                         taskname = @taskname,
                                                         done = @done,
-                                                        description = @description
+                                                        description = @description,
+                                                        priority = @priority
                                                 where taskid = @taskid
-                                                    ");
+                                                    "); 
             cmd.Parameters.Add(new SQLiteParameter("taskname", Name_TextBox.Text));
             cmd.Parameters.Add(new SQLiteParameter("done", (bool)DoneCb.IsChecked ? "+":"-"));
             cmd.Parameters.Add(new SQLiteParameter("description", Description_TextBox.Text));
             cmd.Parameters.Add(new SQLiteParameter("taskid", task.TaskId));
+            cmd.Parameters.Add(new SQLiteParameter("priority", task.Priority));
+            
             cmd.ExecuteNonQuery();
 
 

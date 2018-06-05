@@ -34,8 +34,9 @@ namespace stp
         public MainWindow()
         {
             InitializeComponent();
-
+         
             SetVisible();
+
             TaskListBox.MouseDoubleClick += TaskListBox_MouseDoubleClick;
 
             TaskListBox.Items.Clear();
@@ -170,6 +171,7 @@ namespace stp
             {
                 TaskTextBox.Text = string.Empty;
             }
+            
         }
 
         private void AddTaskButton_Click(object sender, RoutedEventArgs e)
@@ -236,13 +238,7 @@ namespace stp
             GroupListBox.Items.Refresh();
         }
 
-        private void TaskListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            RemoveTaskButton.IsEnabled = true;
-            
-            if (SetVisible())
-                SetTaskInfo();
-        }
+      
 
         //private void CheckBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         //{
@@ -265,29 +261,22 @@ namespace stp
             
         }
 
-        private void Name_TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (!skipValueChanged)
-            {
-                list_group.Find(w => w.GroupId == SelectedGroup().GroupId).
-                task_list.Find(w => w.TaskId == SelectedTask().TaskId).TaskName = Name_TextBox.Text;
-                SaveChanges();
-            }
-            
-        }
+      
         private void SaveChanges()
         {
 
             var cmd = SqlClient.CreateCommand(@"update Tasks set 
                                                         taskname = @taskname,
                                                         deadline = @deadline,
-                                                        description = @description
+                                                        description = @description,
+                                                        priority = @priority
                                                 where taskid = @taskid
                                                     ");
             cmd.Parameters.Add(new SQLiteParameter("taskname", Name_TextBox.Text));           
             cmd.Parameters.Add(new SQLiteParameter("description", Description_TextBox.Text));
             cmd.Parameters.Add(new SQLiteParameter("deadline", Deadline.SelectedDate));
             cmd.Parameters.Add(new SQLiteParameter("taskid", SelectedTask().TaskId));
+            cmd.Parameters.Add(new SQLiteParameter("priority", SelectedTask().Priority));
             cmd.ExecuteNonQuery();
             TaskListBox.Items.Refresh();
         }
@@ -314,8 +303,61 @@ namespace stp
             Name_TextBox.Text = SelectedTask().TaskName;
             Description_TextBox.Text = SelectedTask().Desc;
             Deadline.SelectedDate = SelectedTask().Deadline;
+            PriorityBox.SelectedValue = SelectedTask().Priority;
             skipValueChanged = false;
             
+        }
+
+        private bool SetVisible()
+        {
+            var visible = SelectedTask().TaskId == 0 ? Visibility.Hidden : Visibility.Visible;
+            Name_Label.Visibility = visible;
+            Name_TextBox.Visibility = visible;
+            PriorityBox.Visibility = visible;
+            Priority_Label.Visibility = visible;
+            Description_Label.Visibility = visible;
+            Description_TextBox.Visibility = visible;
+            Deadline.Visibility = visible;
+            Deadline_Label.Visibility = visible;
+            return visible == Visibility.Visible;
+        }
+
+        //private void SetBackGround(ToDoTask task) // todo
+        //{
+        //    var checkBox = (ListBoxItem)TaskListBox.SelectedValue;
+        //    switch (task.Priority)
+        //    {
+        //        case "Important":
+        //            checkBox.Background = Brushes.LightYellow;
+        //            break;
+        //        case "Unimportant":
+        //            checkBox.Background = Brushes.LimeGreen;
+        //            break;
+        //        case "Common":
+        //            checkBox.Background = Brushes.Orchid;
+        //            break;
+        //    }
+
+        //}
+        #region ValuesChanged
+
+        private void TaskListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RemoveTaskButton.IsEnabled = true;
+
+            if (SetVisible())
+                SetTaskInfo();
+        }
+
+        private void Name_TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!skipValueChanged)
+            {
+                list_group.Find(w => w.GroupId == SelectedGroup().GroupId).
+                task_list.Find(w => w.TaskId == SelectedTask().TaskId).TaskName = Name_TextBox.Text;
+                SaveChanges();
+            }
+
         }
 
         private void Description_TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -327,17 +369,7 @@ namespace stp
                 SaveChanges();
             }
         }
-        private bool SetVisible()
-        {
-            var visible = SelectedTask().TaskId == 0 ? Visibility.Hidden : Visibility.Visible;
-            Name_Label.Visibility = visible;
-            Name_TextBox.Visibility = visible;
-            Description_Label.Visibility = visible;
-            Description_TextBox.Visibility = visible;
-            Deadline.Visibility = visible;
-            Deadline_Label.Visibility = visible;
-            return visible == Visibility.Visible;
-        }
+       
 
         private void Deadline_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -348,6 +380,19 @@ namespace stp
                 SaveChanges();
             }
         }
+
+        private void PriorityBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!skipValueChanged)
+            {
+                list_group.Find(w => w.GroupId == SelectedGroup().GroupId).
+                task_list.Find(w => w.TaskId == SelectedTask().TaskId).Priority = (string)PriorityBox.SelectedValue;
+                SaveChanges();        
+            }
+            //SetBackGround(SelectedTask());
+        }
+        #endregion
+
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {          
@@ -495,5 +540,7 @@ namespace stp
             }
             #endregion
         }
+
+       
     }
 }

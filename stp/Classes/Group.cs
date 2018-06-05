@@ -21,7 +21,7 @@ namespace stp.Classes
                 group_id = value;
                 task_list = new List<ToDoTask>();
                
-                var cmd = SqlClient.CreateCommand("select taskid, taskname, done, description, deadline from TASKS where GROUPID = @groupid");
+                var cmd = SqlClient.CreateCommand("select taskid,taskname, done, description, deadline,priority from TASKS where GROUPID = @groupid");
                 cmd.Parameters.Add(new SQLiteParameter("groupid", value));
                 
                 using (var reader = cmd.ExecuteReader()) {
@@ -34,7 +34,8 @@ namespace stp.Classes
                             TaskName = (string)reader["taskname"],
                             done = (string)reader["done"] == "+",
                             Desc = (string)reader["description"],
-                            Deadline = reader.IsDBNull(4)? null :(DateTime?)reader["deadline"]
+                            Deadline = reader.IsDBNull(4) ? null :(DateTime?)reader["deadline"],
+                            Priority = reader.IsDBNull(5) ? "Common" : (string)reader["priority"]
                         });
                     }
                     
