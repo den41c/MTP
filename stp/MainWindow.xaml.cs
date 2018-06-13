@@ -34,13 +34,10 @@ namespace stp
         private bool skipValueChanged;
         private List<Classes.Group> list_group = new List<Classes.Group>();
         //private List<TextBox> list_group_text_boxs = new List<TextBox>();
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            var textBox = sender as TextBox;
-            e.Handled = Regex.IsMatch(e.Text, "[^0-9]+");
-        }
+       
         public MainWindow()
         {
+            
             Calendars.Accounts = new System.Collections.ObjectModel.ObservableCollection<Account>();
             InitializeComponent();
 			TaskGrid.DataContext = new ToDoTask();
@@ -66,6 +63,10 @@ namespace stp
             GroupListBox.ItemsSource = list_group;
         }
 
+        private void Accounts_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
         private void SetTasksGrid(int GroupCode)
         {
@@ -200,12 +201,14 @@ namespace stp
             cmd.Parameters.Add(new SQLiteParameter("groupid", group.GroupId));
             cmd.Parameters.Add(new SQLiteParameter("done", "-"));
             cmd.Parameters.Add(new SQLiteParameter("description", ""));
+
             var newTaskId = (int)(long)cmd.ExecuteScalar();
             list_group.Find(w => w.GroupId == group.GroupId).task_list.Add(new ToDoTask()
             {
                 TaskName = TaskTextBox.Text,
                 TaskId = newTaskId,
-                Deadline = null
+                Deadline = null,
+                Files_names = new List<string>()
             });
             SetTasksGrid(group.GroupId);
             GroupListBox.Items.Refresh();
@@ -225,7 +228,7 @@ namespace stp
             {
                 return;
             }
-
+            
             var taskToRemove = (ToDoTask)taskItemToRemove;
             var groupToRemove = (Classes.Group)groupItemToRemove;
 
@@ -237,13 +240,15 @@ namespace stp
             list_group.Find(w => (w.GroupId == groupToRemove.GroupId) && (w.task_list != null)).
                 task_list.Remove(taskToRemove);
 
-            TaskGrid.Items.Refresh();
+
+            SetTasksGrid(groupToRemove.GroupId);
             //GroupListBox.ItemContainerGenerator.ContainerFromIndex(1);
             RemoveTaskButton.IsEnabled = false;
 
             TaskTextBox.IsEnabled = false;
             //TaskListBox.Items.Clear(); 
             GroupListBox.Items.Refresh();
+            TaskGrid.Items.Refresh();
         }
 
         private void Window_Drop(object sender, DragEventArgs e)
@@ -339,7 +344,8 @@ namespace stp
                                                     ");
             cmd.Parameters.Add(new SQLiteParameter("taskname", Name_TextBox.Text));           
             cmd.Parameters.Add(new SQLiteParameter("description", Description_TextBox.Text));
-            cmd.Parameters.Add(new SQLiteParameter("deadline", Deadline.SelectedDate));
+            cmd.Parameters.Add(new SQLiteParameter("deadline", Deadline.Value));
+           
             cmd.Parameters.Add(new SQLiteParameter("taskid", SelectedTask().TaskId));
             cmd.Parameters.Add(new SQLiteParameter("priority", SelectedTask().Priority));
             cmd.ExecuteNonQuery();
@@ -367,8 +373,9 @@ namespace stp
             Name_TextBox.Text = sT.TaskName;
             Description_TextBox.Text = sT.Desc;
             Description_TextBox.Text = sT.Desc;
-            Deadline.SelectedDate = sT.Deadline;    
-            
+            Deadline.Value = sT.Deadline;
+            //HourTB.Text = sT.Deadline.Value.Hour.ToString();
+            //MinTB.Text = sT.Deadline.Value.Minute.ToString();
             FilesList.Items.Clear();
             foreach (var file in sT.Files_names)
             {
@@ -392,6 +399,8 @@ namespace stp
 
         private bool SetVisible()
         {
+            var t = new ColorPicker();
+          
             var visible = SelectedTask().TaskId == 0 ? Visibility.Hidden : Visibility.Visible;
             Name_Label.Visibility = visible;
             Name_TextBox.Visibility = visible;
@@ -402,8 +411,7 @@ namespace stp
             Files_Label.Visibility = visible;
             FilesList.Visibility = visible;
             RemoveFile.Visibility = visible;
-            HourTB.Visibility = visible;
-            MinTB.Visibility = visible;
+            
 
             return visible == Visibility.Visible;
         }
@@ -437,7 +445,7 @@ namespace stp
             if (!skipValueChanged)
             {
                 list_group.Find(w => w.GroupId == SelectedGroup().GroupId).
-               task_list.Find(w => w.TaskId == SelectedTask().TaskId).Deadline = (DateTime?)Deadline.SelectedDate;
+               task_list.Find(w => w.TaskId == SelectedTask().TaskId).Deadline = (DateTime?)Deadline.Value;
                 SaveChanges();
             }
 
@@ -587,6 +595,7 @@ namespace stp
                     Label label = (Label)this.FindName("MonthLabel" + row1 + col1);
                     label.Content += "\n" + eventItem.Summary;
                 }
+                
             }
             #endregion
         }
@@ -654,31 +663,35 @@ namespace stp
             if (SelectedGroup().GroupId != 0) 
                SetTasksGrid(SelectedGroup().GroupId);
         }
-		private void HourTB_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var h = 0;
-            Int32.TryParse(HourTB.Text, out h);
-            if (h > 24)
-            {
-                HourTB.Text = "24";
-            }
-        }
+		
 
-        private void MinTB_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var h = 0;
-            Int32.TryParse(MinTB.Text, out h);
-            if (h > 60)
-            {
-                MinTB.Text = "60";
-            }
-        }
+     
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             this.DataContext = Calendars.Accounts;
             AccountListView.ItemsSource = Calendars.Accounts;
             this.DataContext = Calendars.Accounts;
+        }
+
+        private void Deadline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (!skipValueChanged)
+            {
+                list_group.Find(w => w.GroupId == SelectedGroup().GroupId).
+               task_list.Find(w => w.TaskId == SelectedTask().TaskId).Deadline = (DateTime?)Deadline.Value;
+                SaveChanges();
+            }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            //var t = Calendars.Accounts;
+            //foreach (var t1 in t) {
+
+            //t1.}
+
+
         }
     }
 }

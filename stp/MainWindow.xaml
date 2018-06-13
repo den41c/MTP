@@ -34,12 +34,13 @@
                     <Button x:Name="AddTaskButton" Content="Add" HorizontalAlignment="Left" Margin="295,389,0,0" VerticalAlignment="Top" Width="37" RenderTransformOrigin="0.5,0.5" IsEnabled="False" Click="AddTaskButton_Click" Grid.Column="2"/>
                     <Button x:Name="RemoveTaskButton" Content="Remove" HorizontalAlignment="Left" Margin="337,389,0,0" VerticalAlignment="Top" Width="56" IsEnabled="False" Height="20" Click="RemoveTaskButton_Click" Grid.Column="2"/>
                     <TextBox x:Name="TaskTextBox" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="95" Margin="195,389,0,0" IsEnabled="False" SelectionChanged="TaskTextBox_SelectionChanged" Grid.Column="2"/>
-                    <TextBox x:Name="Name_TextBox" HorizontalAlignment="Left" Height="23" Margin="481,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="85" TextChanged="Name_TextBox_TextChanged" Grid.Column="2"/>
+                    <TextBox x:Name="Name_TextBox" HorizontalAlignment="Left" Height="23" Margin="481,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="123" TextChanged="Name_TextBox_TextChanged" Grid.Column="2"/>
                     <Label x:Name="Name_Label" Content="Title" HorizontalAlignment="Left" Margin="410,7,0,0" VerticalAlignment="Top" Width="49" Grid.Column="2"/>
-                    <TextBox x:Name="Description_TextBox" HorizontalAlignment="Left" Height="71" Margin="481,38,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="168" TextChanged="Description_TextBox_TextChanged" Grid.Column="2"/>
+                    <TextBox x:Name="Description_TextBox" HorizontalAlignment="Left" Height="71" Margin="481,38,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="239" TextChanged="Description_TextBox_TextChanged" Grid.Column="2"/>
                     <Label x:Name="Description_Label" Content="Description" HorizontalAlignment="Left" Margin="410,38,0,0" VerticalAlignment="Top" Width="71" Grid.Column="2" RenderTransformOrigin="0.521,1.538"/>
                     <Label x:Name="Deadline_Label" Content="Deadline" HorizontalAlignment="Left" Margin="410,114,0,0" VerticalAlignment="Top" Width="71" Grid.Column="2"/>
-                    <DatePicker x:Name="Deadline" HorizontalAlignment="Left" Margin="481,114,0,0" VerticalAlignment="Top" SelectedDateChanged="Deadline_SelectedDateChanged" Grid.Column="2"/>
+                    <!--<DatePicker x:Name="Deadline1" HorizontalAlignment="Left" Margin="658,114,0,0" VerticalAlignment="Top" SelectedDateChanged="Deadline_SelectedDateChanged" Grid.Column="2"/>-->
+                    <xctk:DateTimePicker  x:Name="Deadline" Language="en-br" Localization.Comments="en-br" Localization.Attributes="en-br" HorizontalAlignment="Left" Margin="481,114,0,0" VerticalAlignment="Top" Grid.Column="2" Width="239" ValueChanged="Deadline_ValueChanged" CultureInfo="en-AU"/>
                     <DataGrid x:Name="TaskGrid" IsReadOnly="True" GridLinesVisibility="None" Grid.Column="2" HorizontalAlignment="Left" Height="353" Margin="189,31,0,0" VerticalAlignment="Top" Width="221" CanUserAddRows="False" AutoGeneratingColumn="TaskGrid_AutoGeneratingColumn" SelectionChanged="TaskGrid_SelectionChanged">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Width="22" Header="" IsReadOnly="False">
@@ -68,15 +69,15 @@
                         </DataGrid.Columns>
 
                     </DataGrid>
-                    <ListBox x:Name="FilesList" Grid.Column="2" HorizontalAlignment="Left" Height="97" Margin="475,287,0,0" VerticalAlignment="Top" Width="174" SelectionChanged="FilesList_SelectionChanged" MouseDoubleClick="FilesList_MouseDoubleClick" />
+                    <ListBox x:Name="FilesList" Grid.Column="2" HorizontalAlignment="Left" Height="97" Margin="475,287,0,0" VerticalAlignment="Top" Width="245" SelectionChanged="FilesList_SelectionChanged" MouseDoubleClick="FilesList_MouseDoubleClick" />
                     <Label x:Name="Files_Label" Content="Files" HorizontalAlignment="Left" Margin="415,287,0,0" VerticalAlignment="Top" Width="55" Grid.Column="2" Height="28"/>
                     <Button x:Name="RemoveFile" Content="Remove" HorizontalAlignment="Left" Margin="593,388,0,0" VerticalAlignment="Top" Width="56" IsEnabled="False" Height="20" Grid.Column="2" Click="RemoveFile_Click"/>
                     <ComboBox x:Name="ComboBoxDone" SelectedIndex="0" Grid.Column="2" HorizontalAlignment="Left" Margin="327,4,0,0" VerticalAlignment="Top" Width="83" SelectionChanged="ComboBoxDone_SelectionChanged">
                         <ComboBoxItem Name="All">All</ComboBoxItem>
                         <ComboBoxItem Name="NotDone">Not Done</ComboBoxItem>
                     </ComboBox>
-                    <TextBox x:Name="HourTB" Grid.Column="2" MaxLength="2" HorizontalAlignment="Left" Height="23" Margin="586,115,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="24" PreviewTextInput="NumberValidationTextBox" TextChanged="HourTB_TextChanged"/>
-                    <TextBox x:Name="MinTB" Grid.Column="2" MaxLength="2" HorizontalAlignment="Left" Height="23" Margin="615,115,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="24" PreviewTextInput="NumberValidationTextBox" TextChanged="MinTB_TextChanged"/>
+                    <Button Content="Settings" Grid.Column="2" Width="Auto" Height="Auto" Margin="742,10,10,483" Click="Button_Click_2">
+                    </Button>
                 </Grid>
             </TabItem>
             <TabItem Header="Calendar">

@@ -14,21 +14,28 @@ using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using Xceed.Wpf.Toolkit.Core;
+using System.Windows.Media;
 
 namespace stp
 {
     class Account
     {
         public bool Enabled { get; set; } = true;
+        public bool ToDoEnable { get; set; } = true;
         public string Email { get; set; }
-        public Color Color { get; set; }
-        public Account(bool enabled, string email, int color)
+        public List<Event> EventList { get; set; } // todo
+        public System.Windows.Media.Color Color
+        {
+            get;
+            set;
+        }
+        public Account(bool enabled, string email, byte color1, byte color2, byte color3)
         {
             Enabled = enabled;
             Email = email;
-            Color = Color.FromArgb(color);
+            Color = System.Windows.Media.Color.FromRgb(color1,color2,color3);
         }
-        public Account(bool enabled, string email, Color color)
+        public Account(bool enabled, string email, System.Windows.Media.Color color)
         {
             Enabled = enabled;
             Email = email;
@@ -82,7 +89,7 @@ namespace stp
                 CancellationToken.None,
                 new FileDataStore(credPath, true)).Result;
             UserCredentials.Add(credential);
-            Accounts.Add(new Account(true, LoadMail(credential), Color.Aqua));
+            Accounts.Add(new Account(true, LoadMail(credential), System.Windows.Media.Color.FromRgb(1,1,1)));
             LoadEvents(credential);
         }
 
@@ -96,7 +103,7 @@ namespace stp
                 CancellationToken.None,
                 new FileDataStore(Path.GetDirectoryName(fileName), true)).Result;
             UserCredentials.Add(credential);
-            Accounts.Add(new Account(true, LoadMail(credential), Color.Aqua));
+            Accounts.Add(new Account(true, LoadMail(credential), System.Windows.Media.Color.FromRgb(1, 1, 1)));
         }
 
         public static string LoadMail(UserCredential credential)
