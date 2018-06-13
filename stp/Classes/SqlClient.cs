@@ -11,8 +11,6 @@ namespace stp.Classes
         //string conntectionString;
         public static SQLiteCommand CreateCommand(string commString)
         {
-            //var conntectionString = @"Data Source = C:\Users\densk\source\repos\stp\stp\sqllite\stp.db; Version = 3";
-
             var conntectionString = @"Data Source = sqllite\stp.db; Version = 3";          
             SQLiteConnection con = new SQLiteConnection(conntectionString);
 

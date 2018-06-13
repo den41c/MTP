@@ -44,7 +44,7 @@ namespace stp
 
                     task.TaskId = taskId;
                     task.TaskName = (string)reader["taskname"];
-                    task.done = (string)reader["done"] == "+";
+                    //task.done = (string)reader["done"] == "+";
                     task.Desc = (string)reader["description"];
                 }
 

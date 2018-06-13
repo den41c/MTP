@@ -1,0 +1,22 @@
+to setup-spatially-clustered-network
+  let num-links (averageConnections * agentsCount) / 2
+  while [count links < num-links ]
+  [
+    ask one-of turtles
+    [
+      let choice (min-one-of (other turtles with [not link-neighbor? myself])
+                   [distance myself])
+      if choice != nobody [ create-link-with choice ]
+    ]
+  ]
+  ; make the network look a little prettier
+  repeat 10
+  [
+    layout-spring turtles links 0.3 (world-width / (sqrt agentsCount)) 1
+  ]
+end
+
+ if modelType = "spatially-clustered-network"
+  [setup-spatially-clustered-network]
+  if modelType = "random-network"
+  [setup-random-network]

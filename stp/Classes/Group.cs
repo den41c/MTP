@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
+
+
+using System.Text.RegularExpressions;
 namespace stp.Classes
 {
+   
     class Group
     {
         //private string group_name;
@@ -21,22 +25,23 @@ namespace stp.Classes
                 group_id = value;
                 task_list = new List<ToDoTask>();
                
-                var cmd = SqlClient.CreateCommand("select taskid,taskname, done, description, deadline,priority from TASKS where GROUPID = @groupid");
+                var cmd = SqlClient.CreateCommand("select taskid,taskname, done, description, deadline,priority, files from TASKS where GROUPID = @groupid");
                 cmd.Parameters.Add(new SQLiteParameter("groupid", value));
                 
                 using (var reader = cmd.ExecuteReader()) {
                     while (reader.Read())
                     {
-                        
+
                         task_list.Add(new ToDoTask()
                         {
                             TaskId = (int)(long)reader["taskid"],//reader.GetInt32(0),
                             TaskName = (string)reader["taskname"],
-                            done = (string)reader["done"] == "+",
+                            _done = (string)reader["done"] == "+",
                             Desc = (string)reader["description"],
-                            Deadline = reader.IsDBNull(4) ? null :(DateTime?)reader["deadline"],
-                            Priority = reader.IsDBNull(5) ? "Common" : (string)reader["priority"]
-                        });
+                            Deadline = reader.IsDBNull(4) ? null : (DateTime?)reader["deadline"],
+                            _priority = reader.IsDBNull(5) ? "Common" : (string)reader["priority"],
+                            Files_names = reader.IsDBNull(6) ? new List<string>() : ((string)reader["files"]).Split(',').ToList()
+                    });
                     }
                     
                 }
@@ -46,5 +51,7 @@ namespace stp.Classes
         {
             return GroupName+"("+ task_list.Count.ToString() + ")";
         }
+
+     
     }
 }

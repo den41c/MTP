@@ -12,14 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 using stp.Classes;
-using System.Linq;
 using System.Data.SQLite;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using Xceed.Wpf.Toolkit;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace stp
 {
@@ -29,26 +32,31 @@ namespace stp
     public partial class MainWindow : Window
     {
         private bool skipValueChanged;
-        private List<Group> list_group = new List<Group>();
+        private List<Classes.Group> list_group = new List<Classes.Group>();
         //private List<TextBox> list_group_text_boxs = new List<TextBox>();
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            e.Handled = Regex.IsMatch(e.Text, "[^0-9]+");
+        }
         public MainWindow()
         {
+            Calendars.Accounts = new System.Collections.ObjectModel.ObservableCollection<Account>();
             InitializeComponent();
-         
+			TaskGrid.DataContext = new ToDoTask();
+            this.DataContext = this;
+            //AccountListView.ItemsSource = ;
             SetVisible();
 
-            TaskListBox.MouseDoubleClick += TaskListBox_MouseDoubleClick;
+            //TaskListBox.MouseDoubleClick += TaskListBox_MouseDoubleClick;
 
-            TaskListBox.Items.Clear();
-            TaskListBox.Items.Refresh();
 
-            GroupListBox.SelectionChanged += GroupListBox_SelectionChanged;
             //var tasks = new List<Classes.Task>();
             var cmd = SqlClient.CreateCommand("select * from groups");
             var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                list_group.Add(new Group() {
+                list_group.Add(new Classes.Group() {
                     GroupId = (int)(long)reader["groupid"],
                     GroupName = (string)reader["groupname"],
                     stored_name_of_task = string.Empty
@@ -58,24 +66,23 @@ namespace stp
             GroupListBox.ItemsSource = list_group;
         }
 
-        private void TaskListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
 
-        }
-
-        private void SetTasksListBox(int GroupCode)
+        private void SetTasksGrid(int GroupCode)
         {
             if (list_group.Count > 0)
             {
+                var cb = ComboBoxDone.SelectedIndex;
                 GroupListBox.SelectedItem = list_group.Find(w => (w.GroupId == GroupCode));
-                TaskListBox.ItemsSource = list_group.Find(w => (w.GroupId == GroupCode) && (w.task_list != null)).task_list;
+                //TaskListBox.ItemsSource = list_group.Find(w => (w.GroupId == GroupCode) && (w.task_list != null)).task_list;
+                TaskGrid.ItemsSource = list_group.Find(w => (w.GroupId == GroupCode) && (w.task_list != null)).task_list.Where(w=> cb == 1? ! w.Done: true);
             }
             else
             {
-                TaskListBox.ItemsSource = new List<ToDoTask>();
+                TaskGrid.ItemsSource = new List<ToDoTask>();
+                //TaskListBox.ItemsSource = new List<ToDoTask>();
             }
-
-            TaskListBox.Items.Refresh();
+            TaskGrid.Items.Refresh();
+           // TaskListBox.Items.Refresh();
         }
 
        
@@ -85,18 +92,19 @@ namespace stp
 
             RemoveGroupButton.IsEnabled = true;
             TaskTextBox.IsEnabled = true;
-            var group = (Group)GroupListBox.SelectedItem;
+            var group = (Classes.Group)GroupListBox.SelectedItem;
             if (group != null)
             {
-                SetTasksListBox(group.GroupId);
-                if (list_group.Count > 0 )
+                SetTasksGrid(group.GroupId);
+                if (list_group.Count > 0)
                 {
-                    TaskListBox.SelectedItem = list_group.Find(w => w.GroupId == group.GroupId).task_list.FirstOrDefault();
+                    //TaskListBox.SelectedItem = list_group.Find(w => w.GroupId == group.GroupId).task_list.FirstOrDefault();
+                    TaskGrid.SelectedItem = list_group.Find(w => w.GroupId == group.GroupId).task_list.FirstOrDefault();
                 }
 
                 TaskTextBox.Text = group.stored_name_of_task;
             }
-           
+
         }
 
         private void AddGroup_Click(object sender, RoutedEventArgs e)
@@ -106,7 +114,7 @@ namespace stp
                                                     ");
             cmd.Parameters.Add(new SQLiteParameter("groupname", GroupTextBox.Text));
             var newGroupId = (int)(long)cmd.ExecuteScalar();
-            list_group.Add(new Group()
+            list_group.Add(new Classes.Group()
             {
                 GroupId = newGroupId,
                 GroupName = GroupTextBox.Text,
@@ -121,34 +129,34 @@ namespace stp
         private void RemoveGroup_Click(object sender, RoutedEventArgs e)
         {
             var itemToRemove = GroupListBox.SelectedItem;
-            if (itemToRemove == null || !(itemToRemove is Group))
+            if (itemToRemove == null || !(itemToRemove is Classes.Group))
             {
                 return;
             }
-            var groupToRemove = (Group)itemToRemove;
+            var groupToRemove = (Classes.Group)itemToRemove;
             list_group.Remove(groupToRemove);
-           
+
             var cmd = SqlClient.CreateCommand(@"delete from groups where groupid = @groupid;
                                                 delete from tasks where groupid = @groupid;");
 
             cmd.Parameters.Add(new SQLiteParameter("groupid", groupToRemove.GroupId));
             cmd.ExecuteNonQuery();
 
-            
+
             GroupListBox.Items.Refresh();
-            
+
             //GroupListBox.ItemContainerGenerator.ContainerFromIndex(1);
             RemoveGroupButton.IsEnabled = false;
             TaskTextBox.IsEnabled = false;
             if (list_group.Count > 0)
             {
-                SetTasksListBox(list_group.Last().GroupId);
+                SetTasksGrid(list_group.Last().GroupId);
             }
             else
             {
-                SetTasksListBox(0);
+                SetTasksGrid(0);
             }
-           
+
             //TaskListBox.Items.Clear(); 
         }
   
@@ -160,29 +168,29 @@ namespace stp
         private void TaskTextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
             var item = GroupListBox.SelectedItem;
-            if (item == null || !(item is Group))
+            if (item == null || !(item is Classes.Group))
             {
                 return;
             }
-            var group = (Group)item;
+            var group = (Classes.Group)item;
             group.stored_name_of_task = TaskTextBox.Text;
             AddTaskButton.IsEnabled = TaskTextBox.Text != string.Empty;
             if (!AddTaskButton.IsEnabled)
             {
                 TaskTextBox.Text = string.Empty;
             }
-            
+
         }
 
         private void AddTaskButton_Click(object sender, RoutedEventArgs e)
         {
             var item = GroupListBox.SelectedItem;
-            if (item == null || !(item is Group))
+            if (item == null || !(item is Classes.Group))
             {
                 return;
             }
-            var group = (Group)item;
-         
+            var group = (Classes.Group)item;
+
 
             var cmd = SqlClient.CreateCommand(@"insert into Tasks (taskname, groupid, done, description) 
                                                     values(@taskname,@groupid,@done,@description);
@@ -191,7 +199,7 @@ namespace stp
             cmd.Parameters.Add(new SQLiteParameter("taskname", TaskTextBox.Text));
             cmd.Parameters.Add(new SQLiteParameter("groupid", group.GroupId));
             cmd.Parameters.Add(new SQLiteParameter("done", "-"));
-            cmd.Parameters.Add(new SQLiteParameter("description", "")); 
+            cmd.Parameters.Add(new SQLiteParameter("description", ""));
             var newTaskId = (int)(long)cmd.ExecuteScalar();
             list_group.Find(w => w.GroupId == group.GroupId).task_list.Add(new ToDoTask()
             {
@@ -199,27 +207,27 @@ namespace stp
                 TaskId = newTaskId,
                 Deadline = null
             });
-            SetTasksListBox(group.GroupId);
+            SetTasksGrid(group.GroupId);
             GroupListBox.Items.Refresh();
             TaskTextBox.Text = string.Empty;
         }
 
         private void RemoveTaskButton_Click(object sender, RoutedEventArgs e)
         {
-            var taskItemToRemove = TaskListBox.SelectedItem;
+            var taskItemToRemove = TaskGrid.SelectedItem;
             var groupItemToRemove = GroupListBox.SelectedItem;
 
             if (taskItemToRemove == null || !(taskItemToRemove is ToDoTask))
             {
                 return;
             }
-            if (groupItemToRemove == null || !(groupItemToRemove is Group))
+            if (groupItemToRemove == null || !(groupItemToRemove is Classes.Group))
             {
                 return;
             }
 
             var taskToRemove = (ToDoTask)taskItemToRemove;
-            var groupToRemove = (Group)groupItemToRemove;
+            var groupToRemove = (Classes.Group)groupItemToRemove;
 
             var cmd = SqlClient.CreateCommand(@"delete from tasks where groupid = @groupid and taskid = @taskid;");
 
@@ -229,7 +237,7 @@ namespace stp
             list_group.Find(w => (w.GroupId == groupToRemove.GroupId) && (w.task_list != null)).
                 task_list.Remove(taskToRemove);
 
-            TaskListBox.Items.Refresh();
+            TaskGrid.Items.Refresh();
             //GroupListBox.ItemContainerGenerator.ContainerFromIndex(1);
             RemoveTaskButton.IsEnabled = false;
 
@@ -238,30 +246,87 @@ namespace stp
             GroupListBox.Items.Refresh();
         }
 
-      
+        private void Window_Drop(object sender, DragEventArgs e)
+        {
+            ToDoTask seld_task = SelectedTask();
 
-        //private void CheckBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
-        //{
-        //    var cb = (CheckBox)sender;
-        //    cb.IsChecked = !cb.IsChecked;
+            if (seld_task.TaskId == 0) { return; }
+            string[] droppedFiles = null;
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                droppedFiles = e.Data.GetData(DataFormats.FileDrop, true) as string[];
+            }
+
+            if ((null == droppedFiles) || (!droppedFiles.Any())) { return; }
+                        //FilesList.Items.Clear();
             
-        //    //var t = DependencyProperty.Register("d",)
-        //    //cb.
-        //    //cb.SetValue(new DependencyProperty.,1);
-        //    var task = (ToDoTask)TaskListBox.SelectedItem;
+            foreach (string s in droppedFiles)
+            {
+                FileInfo fileInfo = new FileInfo(s);                     
+                SaveFile(fileInfo);
+                //System.Diagnostics.Process.Start(fileInfo.FullName);
+                seld_task.Files_names.Add(fileInfo.Name);
 
-        //    var Editform = new Edit((int)cb.Tag);
-        //    Editform.Show();
+                FilesList.Items.Add(fileInfo.Name);
+            }
 
-        //    this.Close();
-        //}
+            seld_task.SaveFiles();
+
+            FilesList.Items.Refresh();
+        }
+
+        private void SaveFile(FileInfo fi)
+        {
+            string fileName = fi.Name;
+            string sourcePath = fi.DirectoryName;
+            string targetPath = @"files";
+
+            // Use Path class to manipulate file and directory paths.
+            string sourceFile = System.IO.Path.Combine(sourcePath, fileName);
+            string destFile = System.IO.Path.Combine(targetPath, fileName);
+
+            // To copy a folder's contents to a new location:
+            // Create a new target folder, if necessary.
+            if (!Directory.Exists(targetPath))
+            {
+                Directory.CreateDirectory(targetPath);
+            }
+
+            // To copy a file to another location and 
+            // overwrite the destination file if it already exists.
+            File.Copy(sourceFile, destFile, true);
+
+            // To copy all the files in one directory to another directory.
+            // Get the files in the source folder. (To recursively iterate through
+            // all subfolders under the current directory, see
+            // "How to: Iterate Through a Directory Tree.")
+            // Note: Check for target path was performed previously
+            //       in this code example.
+            if (Directory.Exists(sourcePath))
+            {
+                string[] files = System.IO.Directory.GetFiles(sourcePath);
+
+                // Copy the files and overwrite destination files if they already exist.
+                foreach (string file in files)
+                {
+                    // Use static Path methods to extract only the file name from the path.
+                    fileName = System.IO.Path.GetFileName(file);
+                    destFile = System.IO.Path.Combine(targetPath, fileName);
+                    File.Copy(file, destFile, true);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Source path does not exist!");
+            }
+        }
 
         private void Grid_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            
+
         }
 
-      
+
         private void SaveChanges()
         {
 
@@ -278,34 +343,51 @@ namespace stp
             cmd.Parameters.Add(new SQLiteParameter("taskid", SelectedTask().TaskId));
             cmd.Parameters.Add(new SQLiteParameter("priority", SelectedTask().Priority));
             cmd.ExecuteNonQuery();
-            TaskListBox.Items.Refresh();
+            TaskGrid.Items.Refresh();
         }
         private ToDoTask SelectedTask()
         {
-            return (ToDoTask)TaskListBox.SelectedItem != null ?
-                (ToDoTask)TaskListBox.SelectedItem
+            return (ToDoTask)TaskGrid.SelectedItem != null ?
+                (ToDoTask)TaskGrid.SelectedItem
                 : new ToDoTask();
             //return (ToDoTask)TaskListBox.SelectedItem;
         }
 
-        private Group SelectedGroup()
+        private Classes.Group SelectedGroup()
         {
-            return (Group)GroupListBox.SelectedItem != null ?
-                 (Group)GroupListBox.SelectedItem
-                : new Group();
-            //return (Group)GroupListBox.SelectedItem;
+            return (Classes.Group)GroupListBox.SelectedItem != null ?
+                 (Classes.Group)GroupListBox.SelectedItem
+                : new Classes.Group();
         }
 
         private void SetTaskInfo()
-        {
-            //var eventn = Name_TextBox.TextChanged;
+        {       
             skipValueChanged = true;
-            Name_TextBox.Text = SelectedTask().TaskName;
-            Description_TextBox.Text = SelectedTask().Desc;
-            Deadline.SelectedDate = SelectedTask().Deadline;
-            PriorityBox.SelectedValue = SelectedTask().Priority;
-            skipValueChanged = false;
+            var sT = SelectedTask();
+            Name_TextBox.Text = sT.TaskName;
+            Description_TextBox.Text = sT.Desc;
+            Description_TextBox.Text = sT.Desc;
+            Deadline.SelectedDate = sT.Deadline;    
             
+            FilesList.Items.Clear();
+            foreach (var file in sT.Files_names)
+            {
+                HashSet<string> inListBox = new HashSet<string>();
+                foreach (var item in FilesList.Items)
+                {
+                    inListBox.Add(item.ToString());
+                }
+               
+                if (!inListBox.Contains(file) && file != string.Empty)
+                {
+                    FilesList.Items.Add(file);
+                }
+                
+            }
+
+            FilesList.Items.Refresh();       
+            skipValueChanged = false;
+
         }
 
         private bool SetVisible()
@@ -313,41 +395,20 @@ namespace stp
             var visible = SelectedTask().TaskId == 0 ? Visibility.Hidden : Visibility.Visible;
             Name_Label.Visibility = visible;
             Name_TextBox.Visibility = visible;
-            PriorityBox.Visibility = visible;
-            Priority_Label.Visibility = visible;
             Description_Label.Visibility = visible;
             Description_TextBox.Visibility = visible;
             Deadline.Visibility = visible;
             Deadline_Label.Visibility = visible;
+            Files_Label.Visibility = visible;
+            FilesList.Visibility = visible;
+            RemoveFile.Visibility = visible;
+            HourTB.Visibility = visible;
+            MinTB.Visibility = visible;
+
             return visible == Visibility.Visible;
         }
 
-        //private void SetBackGround(ToDoTask task) // todo
-        //{
-        //    var checkBox = (ListBoxItem)TaskListBox.SelectedValue;
-        //    switch (task.Priority)
-        //    {
-        //        case "Important":
-        //            checkBox.Background = Brushes.LightYellow;
-        //            break;
-        //        case "Unimportant":
-        //            checkBox.Background = Brushes.LimeGreen;
-        //            break;
-        //        case "Common":
-        //            checkBox.Background = Brushes.Orchid;
-        //            break;
-        //    }
-
-        //}
         #region ValuesChanged
-
-        private void TaskListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            RemoveTaskButton.IsEnabled = true;
-
-            if (SetVisible())
-                SetTaskInfo();
-        }
 
         private void Name_TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -379,17 +440,7 @@ namespace stp
                task_list.Find(w => w.TaskId == SelectedTask().TaskId).Deadline = (DateTime?)Deadline.SelectedDate;
                 SaveChanges();
             }
-        }
 
-        private void PriorityBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!skipValueChanged)
-            {
-                list_group.Find(w => w.GroupId == SelectedGroup().GroupId).
-                task_list.Find(w => w.TaskId == SelectedTask().TaskId).Priority = (string)PriorityBox.SelectedValue;
-                SaveChanges();        
-            }
-            //SetBackGround(SelectedTask());
         }
         #endregion
 
@@ -504,9 +555,8 @@ namespace stp
             }
             #endregion
 
-            Calendars.Authorization();
-            Calendars.LoadEvents();
-
+            Calendars.RunJob();
+            LoadAccounts();
             #region MonthEvents
             if (Calendars.events.Items != null && Calendars.events.Items.Count > 0)
             {
@@ -541,6 +591,94 @@ namespace stp
             #endregion
         }
 
-       
+        private void TaskGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if (e.Column.Header.ToString() == "TaskId" || 
+                e.Column.Header.ToString() == "Priority" || 
+                e.Column.Header.ToString() == "Deadline"|| 
+                e.Column.Header.ToString() == "Color" ||
+                e.Column.Header.ToString() == "Done" 
+                )
+            {
+                e.Cancel = true;
+                
+            }
+        }
+
+        private void TaskGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RemoveTaskButton.IsEnabled = true;
+
+            if (SetVisible())
+                SetTaskInfo();
+        }
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Calendars.AuthorizationNew();
+        }
+        private void RemoveFile_Click(object sender, RoutedEventArgs e)
+        {
+            var item_to_remove = (string)FilesList.SelectedValue;
+            var seld_task = SelectedTask();
+            seld_task.Files_names.Remove(item_to_remove);
+            seld_task.SaveFiles();
+            FilesList.Items.Remove(item_to_remove);
+            FilesList.Items.Refresh();
+            RemoveFile.IsEnabled = false;
+
+        }
+        public void LoadAccounts()
+        {
+            this.DataContext = Calendars.Accounts;
+            AccountListView.ItemsSource = Calendars.Accounts;
+            this.DataContext = Calendars.Accounts;
+        }
+
+        private void FilesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RemoveFile.Visibility = FilesList.Items.Count > 0 ? Visibility.Visible : Visibility.Hidden;
+            RemoveFile.IsEnabled = true;
+        }
+
+        private void FilesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            string filename = (string)FilesList.SelectedValue;
+            if (filename == null)
+                return;
+            string sourceFile = System.IO.Path.Combine("files", filename);
+            System.Diagnostics.Process.Start(sourceFile);
+        }
+
+        private void ComboBoxDone_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (SelectedGroup().GroupId != 0) 
+               SetTasksGrid(SelectedGroup().GroupId);
+        }
+		private void HourTB_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var h = 0;
+            Int32.TryParse(HourTB.Text, out h);
+            if (h > 24)
+            {
+                HourTB.Text = "24";
+            }
+        }
+
+        private void MinTB_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var h = 0;
+            Int32.TryParse(MinTB.Text, out h);
+            if (h > 60)
+            {
+                MinTB.Text = "60";
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            this.DataContext = Calendars.Accounts;
+            AccountListView.ItemsSource = Calendars.Accounts;
+            this.DataContext = Calendars.Accounts;
+        }
     }
 }
