@@ -26,12 +26,10 @@ C:\Users\dovorob\Source\Repos\MTP2\stp\bin\Debug\Newtonsoft.Json.xml
 C:\Users\dovorob\Source\Repos\MTP2\stp\bin\Debug\System.Data.SQLite.xml
 C:\Users\dovorob\Source\Repos\MTP2\stp\bin\Debug\System.Data.SQLite.dll.config
 C:\Users\dovorob\Source\Repos\MTP2\stp\obj\Debug\stp.csprojAssemblyReference.cache
-C:\Users\dovorob\Source\Repos\MTP2\stp\obj\Debug\Edit.g.cs
 C:\Users\dovorob\Source\Repos\MTP2\stp\obj\Debug\MainWindow.g.cs
 C:\Users\dovorob\Source\Repos\MTP2\stp\obj\Debug\App.g.cs
 C:\Users\dovorob\Source\Repos\MTP2\stp\obj\Debug\stp_MarkupCompile.cache
 C:\Users\dovorob\Source\Repos\MTP2\stp\obj\Debug\stp_MarkupCompile.lref
-C:\Users\dovorob\Source\Repos\MTP2\stp\obj\Debug\Edit.baml
 C:\Users\dovorob\Source\Repos\MTP2\stp\obj\Debug\MainWindow.baml
 C:\Users\dovorob\Source\Repos\MTP2\stp\obj\Debug\stp.g.resources
 C:\Users\dovorob\Source\Repos\MTP2\stp\obj\Debug\stp.Properties.Resources.resources
@@ -181,3 +179,5 @@ C:\Users\densk\source\repos\stp\stp\obj\Debug\stp.exe
 C:\Users\densk\source\repos\stp\stp\obj\Debug\stp.pdb
 C:\Users\densk\source\repos\stp\stp\obj\Debug\Settings.g.cs
 C:\Users\densk\source\repos\stp\stp\obj\Debug\Settings.baml
+C:\Users\dovorob\source\repos\MTP2\stp\obj\Debug\Settings.g.cs
+C:\Users\dovorob\source\repos\MTP2\stp\obj\Debug\Settings.baml

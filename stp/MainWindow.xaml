@@ -192,8 +192,8 @@
                         <Label Grid.Column="5" Content="Fri"/>
                         <Label Grid.Column="6" Content="Sat"/>
                     </Grid>
-                    <Button Content="Add Account" HorizontalAlignment="Left" Margin="592,12,0,0" VerticalAlignment="Top" Width="105" Click="Button_Click"/>
-                    <Button Content="Delete Account" HorizontalAlignment="Left" Margin="592,37,0,0" VerticalAlignment="Top" Width="105" Click="Button_Click_1"/>
+                    <Button Name="AddAccount" Content="Add Account" HorizontalAlignment="Left" Margin="592,12,0,0" VerticalAlignment="Top" Width="105" Click="Button_Click"/>
+                    <Button Name="DeleteAccount" Content="Delete Account" HorizontalAlignment="Left" Margin="592,37,0,0" VerticalAlignment="Top" Width="105" Click="DeleteAccount_Click"/>
                     <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="95" Margin="312,0,0,0" VerticalAlignment="Top" Width="275">
                         <ListBox Name="AccountListView" Margin="1,-1,-1,-1" ItemsSource="{Binding}">
                             <ListBox.ItemTemplate>

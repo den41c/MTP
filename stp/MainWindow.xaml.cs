@@ -51,7 +51,7 @@ namespace stp
         {
 
             Calendars.Accounts = new System.Collections.ObjectModel.ObservableCollection<Account>();
-            string filePath = System.IO.Path.Combine(Environment.CurrentDirectory, "SerializedAccounts.bin").ToString();
+            string filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SerializedAccounts.bin").ToString();
             if (File.Exists(filePath))
             {
                 IFormatter formatter = new BinaryFormatter();
@@ -743,14 +743,6 @@ namespace stp
 
 
 
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            this.DataContext = Calendars.Accounts;
-            AccountListView.ItemsSource = Calendars.Accounts;
-            this.DataContext = Calendars.Accounts;
-        }
-
         private void Deadline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (!skipValueChanged)
@@ -788,7 +780,7 @@ namespace stp
         {
             Calendars.AccountsForSerialization.Accounts = Calendars.Accounts;
             IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(System.IO.Path.Combine(Environment.CurrentDirectory, "SerializedAccounts.bin").ToString(), FileMode.Create, FileAccess.Write);
+            Stream stream = new FileStream(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SerializedAccounts.bin").ToString(), FileMode.Create, FileAccess.Write);
             formatter.Serialize(stream, Calendars.AccountsForSerialization);
             stream.Close();
         }
@@ -863,6 +855,23 @@ namespace stp
         private void RefreshEvents()
         {
 
+        }
+
+        private void DeleteAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if (AccountListView.SelectedIndex >= 0)
+            {
+                DirectoryInfo di = new DirectoryInfo(Calendars.Accounts[AccountListView.SelectedIndex].PathToCredentials);
+                foreach (FileInfo file in di.GetFiles())
+                {
+                    file.Delete();
+                }
+                foreach (DirectoryInfo dir in di.GetDirectories())
+                {
+                    dir.Delete(true);
+                }
+            }
+            Calendars.Accounts.Remove(Calendars.Accounts[AccountListView.SelectedIndex]);
         }
     }
 }
