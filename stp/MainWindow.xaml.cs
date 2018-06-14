@@ -23,6 +23,8 @@ using Google.Apis.Util.Store;
 using Xceed.Wpf.Toolkit;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace stp
 {
@@ -31,14 +33,27 @@ namespace stp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static System.Globalization.Calendar calendar = DateTimeFormatInfo.CurrentInfo.Calendar;
         private bool skipValueChanged;
         private List<Classes.Group> list_group = new List<Classes.Group>();
         //private List<TextBox> list_group_text_boxs = new List<TextBox>();
        
         public MainWindow()
         {
-            
             Calendars.Accounts = new System.Collections.ObjectModel.ObservableCollection<Account>();
+
+            string filePath = System.IO.Path.Combine(Environment.CurrentDirectory, "SerializedAccounts.bin").ToString();
+            if (File.Exists(filePath))
+            {
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                if (stream.Length != 0)
+                {
+                    Calendars.AccountsForSerialization = (AccountsForSerialization)formatter.Deserialize(stream);
+                    Calendars.Accounts = Calendars.AccountsForSerialization.Accounts;
+                }
+            }
+
             InitializeComponent();
 			TaskGrid.DataContext = new ToDoTask();
             this.DataContext = this;
@@ -84,9 +99,7 @@ namespace stp
             }
             TaskGrid.Items.Refresh();
            // TaskListBox.Items.Refresh();
-        }
-
-       
+        }      
 
         private void GroupListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -565,37 +578,80 @@ namespace stp
 
             Calendars.RunJob();
             LoadAccounts();
-            #region MonthEvents
-            if (Calendars.events.Items != null && Calendars.events.Items.Count > 0)
-            {
-                foreach (var eventItem in Calendars.events.Items)
-                {
-                    DateTime? when = eventItem.Start.DateTime;
-                    dateTime = when.Value;
-                    if (DateTime.Now.Month != dateTime.Month || DateTime.Now.Year != dateTime.Year)
-                    {
-                        continue;
-                    }
-                    while (dateTime.Day != 1)
-                    {
-                        dateTime = dateTime.AddDays(-1);
-                    }
-                    int row1 = 1, col1 = (int)dateTime.DayOfWeek;
-                    while (dateTime != when.Value)
-                    {
-                        col1++;
-                        if (col1 == 7)
-                        {
-                            col1 = 0;
-                            row1++;
-                        }
-                        dateTime = dateTime.AddDays(1);
 
+            #region DayEvents
+
+            #endregion
+            #region WeekEwents
+            foreach (var account in Calendars.Accounts)
+            {
+                if (account.Enabled && account.Events.Items != null && account.Events.Items.Count > 0)
+                {
+                    foreach (var eventItem in account.Events.Items)
+                    {
+                        DateTime? when = eventItem.Start.DateTime;
+                        dateTime = when.Value;
+                        if (calendar.GetWeekOfYear(Calendars.SelectedDateTime, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) != calendar.GetWeekOfYear(Calendars.SelectedDateTime, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) || Calendars.SelectedDateTime.Year != dateTime.Year)
+                        {
+                            continue;
+                        }
+                        while ((int)dateTime.DayOfWeek != 1)
+                        {
+                            dateTime = dateTime.AddDays(-1);
+                        }
+                        int row1 = 1, col1 = (int)dateTime.DayOfWeek;
+                        while (dateTime != when.Value)
+                        {
+                            col1++;
+                            if (col1 == 7)
+                            {
+                                col1 = 0;
+                                row1++;
+                            }
+                            dateTime = dateTime.AddDays(1);
+
+                        }
+                        Label label = (Label)this.FindName("MonthLabel" + row1 + col1);
+                        label.Content += "\n" + eventItem.Summary;
                     }
-                    Label label = (Label)this.FindName("MonthLabel" + row1 + col1);
-                    label.Content += "\n" + eventItem.Summary;
+
                 }
-                
+            }
+            #endregion
+            #region MonthEvents
+            foreach (var account in Calendars.Accounts)
+            {
+                if (account.Enabled && account.Events.Items != null && account.Events.Items.Count > 0)
+                {
+                    foreach (var eventItem in account.Events.Items)
+                    {
+                        DateTime? when = eventItem.Start.DateTime;
+                        dateTime = when.Value;
+                        if (DateTime.Now.Month != dateTime.Month || DateTime.Now.Year != dateTime.Year)
+                        {
+                            continue;
+                        }
+                        while (dateTime.Day != 1)
+                        {
+                            dateTime = dateTime.AddDays(-1);
+                        }
+                        int row1 = 1, col1 = (int)dateTime.DayOfWeek;
+                        while (dateTime != when.Value)
+                        {
+                            col1++;
+                            if (col1 == 7)
+                            {
+                                col1 = 0;
+                                row1++;
+                            }
+                            dateTime = dateTime.AddDays(1);
+
+                        }
+                        Label label = (Label)this.FindName("MonthLabel" + row1 + col1);
+                        label.Content += "\n" + eventItem.Summary;
+                    }
+
+                }
             }
             #endregion
         }
@@ -609,8 +665,7 @@ namespace stp
                 e.Column.Header.ToString() == "Done" 
                 )
             {
-                e.Cancel = true;
-                
+                e.Cancel = true;               
             }
         }
 
@@ -662,10 +717,7 @@ namespace stp
         {
             if (SelectedGroup().GroupId != 0) 
                SetTasksGrid(SelectedGroup().GroupId);
-        }
-		
-
-     
+        } 
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -691,6 +743,65 @@ namespace stp
 
             //t1.}
 
+
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Calendars.AccountsForSerialization.Accounts = Calendars.Accounts;
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(System.IO.Path.Combine(Environment.CurrentDirectory, "SerializedAccounts.bin").ToString(), FileMode.Create, FileAccess.Write);
+            formatter.Serialize(stream, Calendars.AccountsForSerialization);
+            stream.Close();
+        }
+
+        private void LeftArrow_Click(object sender, RoutedEventArgs e)
+        {
+            switch (comboBoxCalendarView.SelectedItem.ToString())
+            {
+                case "Daily":
+                    Calendars.SelectedDateTime.AddDays(-1);
+                    break;
+                case "Weekly":
+                    Calendars.SelectedDateTime.AddDays(-7);
+                    break;
+                case "Monthly":
+                    Calendars.SelectedDateTime.AddMonths(-1);
+                    break;
+                default:
+                    break;
+            }
+            RefreshGreed();
+            RefreshEvents();
+        }
+
+        private void RightArrow_Click(object sender, RoutedEventArgs e)
+        {
+            switch (comboBoxCalendarView.SelectedItem.ToString())
+            {
+                case "Daily":
+                    Calendars.SelectedDateTime.AddDays(1);
+                    break;
+                case "Weekly":
+                    Calendars.SelectedDateTime.AddDays(7);
+                    break;
+                case "Monthly":
+                    Calendars.SelectedDateTime.AddMonths(1);
+                    break;
+                default:
+                    break;
+            }
+            RefreshGreed();
+            RefreshEvents();
+        }
+
+        private void RefreshGreed()
+        {
+
+        }
+        
+        private void RefreshEvents()
+        {
 
         }
     }

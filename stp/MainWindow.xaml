@@ -8,7 +8,7 @@
         xmlns:local2="clr-namespace:stp.Classes"
         
         mc:Ignorable="d"
-        Title="MainWindow" Height="640" Width="960" Loaded="Window_Loaded"  AllowDrop="True" Drop="Window_Drop">
+        Title="MainWindow" Height="640" Width="960" Loaded="Window_Loaded"  AllowDrop="True" Drop="Window_Drop" Closed="Window_Closed">
 
     <Grid Margin="0,0,0,-6">
         <!--<Grid.ColumnDefinitions>
@@ -192,18 +192,28 @@
                                 <DataTemplate>
                                     <Grid Margin="0,2">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="100"></ColumnDefinition>
                                             <ColumnDefinition Width="30"></ColumnDefinition>
-                                            <ColumnDefinition Width="30"></ColumnDefinition>
+                                            <ColumnDefinition Width="50"></ColumnDefinition>
+                                            <ColumnDefinition Width="150"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
                                         <CheckBox IsChecked="{Binding Path=Enabled}"/>
                                         <xctk:ColorPicker Grid.Column="1" Width="45" SelectedColor="{Binding Path=Color}"/>
-                                        <TextBlock Grid.Column="3" Text="{Binding Path=Email}"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Path=Email}"/>
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </Border>
+                    <Button Name="LeftArrow" Margin="45,60,0,0" Width="25" VerticalAlignment="Top" HorizontalAlignment="Left" Click="LeftArrow_Click">
+                        <StackPanel>
+                            <Image Source="arrow_right.png" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="RightArrow" Margin="15,60,0,0" Width="25" VerticalAlignment="Top" HorizontalAlignment="Left" Click="RightArrow_Click">
+                        <StackPanel>
+                            <Image Source="arrow_left.png" />
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </TabItem>
         </TabControl>

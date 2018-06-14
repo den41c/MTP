@@ -15,19 +15,39 @@ using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using Xceed.Wpf.Toolkit.Core;
 using System.Windows.Media;
+using System.Runtime.Serialization;
 
 namespace stp
 {
-    class Account
+    [Serializable]
+    class AccountsForSerialization
+    {
+        public ObservableCollection<Account> Accounts;
+    }
+
+    [Serializable]
+    public class Account
     {
         public bool Enabled { get; set; } = true;
         public bool ToDoEnable { get; set; } = true;
         public string Email { get; set; }
-        public List<Event> EventList { get; set; } // todo
+
+        [NonSerialized]
+        public Events Events;
+        public string PathToCredentials { get; set; }
+        private byte A;
+        private byte B;
+        private byte G;
+        private byte R;        
+        [NonSerialized]
+        private System.Windows.Media.Color _Color;
         public System.Windows.Media.Color Color
         {
-            get;
-            set;
+            get { return _Color; }
+            set
+            {
+                _Color = value;
+            }
         }
         public Account(bool enabled, string email, byte color1, byte color2, byte color3)
         {
@@ -35,24 +55,40 @@ namespace stp
             Email = email;
             Color = System.Windows.Media.Color.FromRgb(color1,color2,color3);
         }
-        public Account(bool enabled, string email, System.Windows.Media.Color color)
+        public Account(bool enabled, string email, System.Windows.Media.Color color, string pathToCredentials)
         {
             Enabled = enabled;
             Email = email;
             Color = color;
+            PathToCredentials = pathToCredentials;
+        }
+        [OnSerializing]
+        private void OnSerializing(StreamingContext context)
+        {
+            A = _Color.A;
+            B = _Color.B;
+            G = _Color.G;
+            R = _Color.R;
+        }
+        [OnDeserialized]
+        private void OnDeserialised(StreamingContext context)
+        {
+            _Color = System.Windows.Media.Color.FromArgb(A, R, G, B);
         }
     }
 
     static class Calendars
     {
+        public static DateTime SelectedDateTime = DateTime.Now;
+
+        public static AccountsForSerialization AccountsForSerialization = new AccountsForSerialization();
+
         public static ObservableCollection<Account> Accounts = new ObservableCollection<Account>();
 
         static string ApplicationName = "ToDo";
         static string[] Scopes = { CalendarService.Scope.Calendar, GmailService.Scope.GmailMetadata};
 
         static List<UserCredential> UserCredentials = new List<UserCredential>();
-
-        static public Events events;
 
         public static void RunJob()
         {
@@ -79,7 +115,7 @@ namespace stp
         public static void AuthorizationNew()
         {
             var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read);
-                string credPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            string credPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             credPath = Path.Combine(credPath, "todo_credentials", Guid.NewGuid().ToString());
 
             var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
@@ -89,21 +125,26 @@ namespace stp
                 CancellationToken.None,
                 new FileDataStore(credPath, true)).Result;
             UserCredentials.Add(credential);
-            Accounts.Add(new Account(true, LoadMail(credential), System.Windows.Media.Color.FromRgb(1,1,1)));
-            LoadEvents(credential);
+            Accounts.Add(new Account(true, LoadMail(credential), System.Windows.Media.Color.FromRgb(1,1,1), credPath));
+            Accounts[Accounts.Count - 1].Events = LoadEvents(credential);
         }
 
         public static void Authorization(string fileName)
         {
+            string credPath = Path.GetDirectoryName(fileName);
             var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read);
             var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                 GoogleClientSecrets.Load(stream).Secrets,
                 Scopes,
                 "user",
                 CancellationToken.None,
-                new FileDataStore(Path.GetDirectoryName(fileName), true)).Result;
+                new FileDataStore(credPath, true)).Result;
             UserCredentials.Add(credential);
-            Accounts.Add(new Account(true, LoadMail(credential), System.Windows.Media.Color.FromRgb(1, 1, 1)));
+            foreach (var account in Accounts)
+            {
+                if (account.PathToCredentials == credPath)
+                    account.Events = LoadEvents(credential);
+            }
         }
 
         public static string LoadMail(UserCredential credential)
@@ -118,7 +159,7 @@ namespace stp
             return response.EmailAddress;
         }
 
-        public static void LoadEvents(UserCredential credential)
+        public static Events LoadEvents(UserCredential credential)
         {
             var service = new CalendarService(new BaseClientService.Initializer()
             {
@@ -134,7 +175,7 @@ namespace stp
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
 
             // List events.
-            events = request.Execute();
+            return request.Execute();
         }
 
         static void DoIt()
