@@ -12,7 +12,7 @@ namespace stp.Classes
    
     class Group
     {
-        //private string group_name;
+        public bool All = true;
         public List<ToDoTask> task_list;
         public string GroupName { get; set; }
         public string stored_name_of_task;
@@ -49,7 +49,8 @@ namespace stp.Classes
         }
         public override string ToString()
         {
-            return GroupName+"("+ task_list.Count.ToString() + ")";
+
+            return GroupName + "(" + task_list.Where(w => All ? true: !w.Done ).ToList().Count.ToString() + ")";
         }
 
      

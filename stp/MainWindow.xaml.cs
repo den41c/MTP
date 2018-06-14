@@ -34,14 +34,23 @@ namespace stp
     public partial class MainWindow : Window
     {
         private static System.Globalization.Calendar calendar = DateTimeFormatInfo.CurrentInfo.Calendar;
+        public List<Setting> Setting;
+        private bool chang;
         private bool skipValueChanged;
         private List<Classes.Group> list_group = new List<Classes.Group>();
-        //private List<TextBox> list_group_text_boxs = new List<TextBox>();
-       
+
+        public List<Events> AllEventsList;
+        public class Events
+        {
+            public Account Account { get; set; }
+            public string ID { get; set; }
+            public string Summary { get; set; }
+            public DateTime? EventDate { get; set; }
+        }
         public MainWindow()
         {
-            Calendars.Accounts = new System.Collections.ObjectModel.ObservableCollection<Account>();
 
+            Calendars.Accounts = new System.Collections.ObjectModel.ObservableCollection<Account>();
             string filePath = System.IO.Path.Combine(Environment.CurrentDirectory, "SerializedAccounts.bin").ToString();
             if (File.Exists(filePath))
             {
@@ -53,28 +62,25 @@ namespace stp
                     Calendars.Accounts = Calendars.AccountsForSerialization.Accounts;
                 }
             }
-
             InitializeComponent();
-			TaskGrid.DataContext = new ToDoTask();
+            TaskGrid.DataContext = new ToDoTask();
             this.DataContext = this;
-            //AccountListView.ItemsSource = ;
+
             SetVisible();
+           
 
-            //TaskListBox.MouseDoubleClick += TaskListBox_MouseDoubleClick;
-
-
-            //var tasks = new List<Classes.Task>();
             var cmd = SqlClient.CreateCommand("select * from groups");
             var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                list_group.Add(new Classes.Group() {
+                list_group.Add(new Classes.Group()
+                {
                     GroupId = (int)(long)reader["groupid"],
                     GroupName = (string)reader["groupname"],
                     stored_name_of_task = string.Empty
                 });
             }
-            
+
             GroupListBox.ItemsSource = list_group;
         }
 
@@ -90,16 +96,22 @@ namespace stp
                 var cb = ComboBoxDone.SelectedIndex;
                 GroupListBox.SelectedItem = list_group.Find(w => (w.GroupId == GroupCode));
                 //TaskListBox.ItemsSource = list_group.Find(w => (w.GroupId == GroupCode) && (w.task_list != null)).task_list;
-                TaskGrid.ItemsSource = list_group.Find(w => (w.GroupId == GroupCode) && (w.task_list != null)).task_list.Where(w=> cb == 1? ! w.Done: true);
+                TaskGrid.ItemsSource = list_group.Find(w => (w.GroupId == GroupCode) && (w.task_list != null)).task_list.Where(w => cb == 1 ? !w.Done : true);
             }
             else
             {
                 TaskGrid.ItemsSource = new List<ToDoTask>();
                 //TaskListBox.ItemsSource = new List<ToDoTask>();
             }
+
+
+            chang = false;
             TaskGrid.Items.Refresh();
-           // TaskListBox.Items.Refresh();
-        }      
+            chang = true;
+            // TaskListBox.Items.Refresh();
+        }
+
+
 
         private void GroupListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -173,7 +185,7 @@ namespace stp
 
             //TaskListBox.Items.Clear(); 
         }
-  
+
         private void GroupTextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
             AddGroupButton.IsEnabled = GroupTextBox.Text != string.Empty;
@@ -241,7 +253,7 @@ namespace stp
             {
                 return;
             }
-            
+
             var taskToRemove = (ToDoTask)taskItemToRemove;
             var groupToRemove = (Classes.Group)groupItemToRemove;
 
@@ -261,7 +273,9 @@ namespace stp
             TaskTextBox.IsEnabled = false;
             //TaskListBox.Items.Clear(); 
             GroupListBox.Items.Refresh();
+            chang = false;
             TaskGrid.Items.Refresh();
+            chang = true;
         }
 
         private void Window_Drop(object sender, DragEventArgs e)
@@ -276,11 +290,11 @@ namespace stp
             }
 
             if ((null == droppedFiles) || (!droppedFiles.Any())) { return; }
-                        //FilesList.Items.Clear();
-            
+            //FilesList.Items.Clear();
+
             foreach (string s in droppedFiles)
             {
-                FileInfo fileInfo = new FileInfo(s);                     
+                FileInfo fileInfo = new FileInfo(s);
                 SaveFile(fileInfo);
                 //System.Diagnostics.Process.Start(fileInfo.FullName);
                 seld_task.Files_names.Add(fileInfo.Name);
@@ -355,14 +369,16 @@ namespace stp
                                                         priority = @priority
                                                 where taskid = @taskid
                                                     ");
-            cmd.Parameters.Add(new SQLiteParameter("taskname", Name_TextBox.Text));           
+            cmd.Parameters.Add(new SQLiteParameter("taskname", Name_TextBox.Text));
             cmd.Parameters.Add(new SQLiteParameter("description", Description_TextBox.Text));
             cmd.Parameters.Add(new SQLiteParameter("deadline", Deadline.Value));
-           
+
             cmd.Parameters.Add(new SQLiteParameter("taskid", SelectedTask().TaskId));
             cmd.Parameters.Add(new SQLiteParameter("priority", SelectedTask().Priority));
             cmd.ExecuteNonQuery();
+            chang = false;
             TaskGrid.Items.Refresh();
+            chang = true;
         }
         private ToDoTask SelectedTask()
         {
@@ -379,8 +395,10 @@ namespace stp
                 : new Classes.Group();
         }
 
+
+
         private void SetTaskInfo()
-        {       
+        {
             skipValueChanged = true;
             var sT = SelectedTask();
             Name_TextBox.Text = sT.TaskName;
@@ -397,15 +415,15 @@ namespace stp
                 {
                     inListBox.Add(item.ToString());
                 }
-               
+
                 if (!inListBox.Contains(file) && file != string.Empty)
                 {
                     FilesList.Items.Add(file);
                 }
-                
+
             }
 
-            FilesList.Items.Refresh();       
+            FilesList.Items.Refresh();
             skipValueChanged = false;
 
         }
@@ -413,7 +431,7 @@ namespace stp
         private bool SetVisible()
         {
             var t = new ColorPicker();
-          
+
             var visible = SelectedTask().TaskId == 0 ? Visibility.Hidden : Visibility.Visible;
             Name_Label.Visibility = visible;
             Name_TextBox.Visibility = visible;
@@ -424,7 +442,7 @@ namespace stp
             Files_Label.Visibility = visible;
             FilesList.Visibility = visible;
             RemoveFile.Visibility = visible;
-            
+
 
             return visible == Visibility.Visible;
         }
@@ -451,7 +469,7 @@ namespace stp
                 SaveChanges();
             }
         }
-       
+
 
         private void Deadline_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -467,7 +485,7 @@ namespace stp
 
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {          
+        {
             switch (((sender as ComboBox).SelectedItem as ComboBoxItem).Content as string)
             {
                 case "Daily":
@@ -543,7 +561,7 @@ namespace stp
                 dateTime = dateTime.AddDays(-1);
             }
             int row = 1, col = (int)dateTime.DayOfWeek;
-            while(dateTime.Month == currentMonth)
+            while (dateTime.Month == currentMonth)
             {
                 Label label = new Label();
                 label.Name = "MonthLabel" + row + col;
@@ -565,7 +583,7 @@ namespace stp
                 for (int j = 0; j < 7; j++)
                 {
                     Border border = new Border();
-                    
+
                     border.Name = "MonthBorder" + i + j;
                     border.BorderThickness = new Thickness(1.0);
                     border.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
@@ -578,7 +596,7 @@ namespace stp
 
             Calendars.RunJob();
             LoadAccounts();
-
+            SetEventList();
             #region DayEvents
 
             #endregion
@@ -658,14 +676,15 @@ namespace stp
 
         private void TaskGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            if (e.Column.Header.ToString() == "TaskId" || 
-                e.Column.Header.ToString() == "Priority" || 
-                e.Column.Header.ToString() == "Deadline"|| 
+            if (e.Column.Header.ToString() == "TaskId" ||
+                e.Column.Header.ToString() == "Priority" ||
+                e.Column.Header.ToString() == "Deadline" ||
                 e.Column.Header.ToString() == "Color" ||
-                e.Column.Header.ToString() == "Done" 
+                e.Column.Header.ToString() == "Done" ||
+                e.Column.Header.ToString() == "TaskName"
                 )
             {
-                e.Cancel = true;               
+                e.Cancel = true;
             }
         }
 
@@ -715,9 +734,15 @@ namespace stp
 
         private void ComboBoxDone_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (SelectedGroup().GroupId != 0) 
-               SetTasksGrid(SelectedGroup().GroupId);
-        } 
+            list_group.ForEach(w => w.All = ComboBoxDone.SelectedIndex == 0);
+            if (SelectedGroup().GroupId != 0)
+                SetTasksGrid(SelectedGroup().GroupId);
+            GroupListBox.Items.Refresh();
+
+        }
+
+
+
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -736,15 +761,28 @@ namespace stp
             }
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            //var t = Calendars.Accounts;
-            //foreach (var t1 in t) {
-
-            //t1.}
-
-
+            if (chang)
+            {
+                SetTasksGrid(SelectedGroup().GroupId); chang = false;
+            }
         }
+
+        private void CheckBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            chang = true;
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var set = new Edit(this);
+            set.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            set.Show();
+            Setting = set.Setting;
+        }
+
+       
 
         private void Window_Closed(object sender, EventArgs e)
         {
@@ -795,11 +833,33 @@ namespace stp
             RefreshEvents();
         }
 
+        public void SetEventList()
+        {
+            AllEventsList = new List<Events>();
+            // var t = Calendars.Accounts;
+            foreach (var acc in Calendars.Accounts.Where(w=>w.ToDoEnable))
+            {
+                foreach (var evt in acc.Events.Items)
+                {
+
+                    AllEventsList.Add(new Events()
+                    {
+                        Account = acc,
+                        ID = evt.Id,
+                        Summary = evt.Summary,
+                        EventDate = evt.Start.DateTime
+                    });
+                }
+            }
+
+            EventsListBox.ItemsSource = AllEventsList.OrderBy(w => w.EventDate).
+                Select(w=>string.Format("{0} {1} - {2}", w.EventDate.Value.ToShortDateString(), w.EventDate.Value.ToShortTimeString(),w.Summary)).Take(10);
+        }
         private void RefreshGreed()
         {
 
         }
-        
+
         private void RefreshEvents()
         {
 

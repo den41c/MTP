@@ -167,12 +167,10 @@ C:\Users\densk\source\repos\stp\stp\bin\Debug\ru\Xceed.Wpf.AvalonDock.resources.
 C:\Users\densk\source\repos\stp\stp\bin\Debug\sv\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\densk\source\repos\stp\stp\bin\Debug\zh-Hans\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\densk\source\repos\stp\stp\obj\Debug\stp.csprojAssemblyReference.cache
-C:\Users\densk\source\repos\stp\stp\obj\Debug\Edit.g.cs
 C:\Users\densk\source\repos\stp\stp\obj\Debug\MainWindow.g.cs
 C:\Users\densk\source\repos\stp\stp\obj\Debug\App.g.cs
 C:\Users\densk\source\repos\stp\stp\obj\Debug\stp_MarkupCompile.cache
 C:\Users\densk\source\repos\stp\stp\obj\Debug\stp_MarkupCompile.lref
-C:\Users\densk\source\repos\stp\stp\obj\Debug\Edit.baml
 C:\Users\densk\source\repos\stp\stp\obj\Debug\MainWindow.baml
 C:\Users\densk\source\repos\stp\stp\obj\Debug\stp.g.resources
 C:\Users\densk\source\repos\stp\stp\obj\Debug\stp.Properties.Resources.resources
@@ -181,3 +179,5 @@ C:\Users\densk\source\repos\stp\stp\obj\Debug\stp.csproj.CoreCompileInputs.cache
 C:\Users\densk\source\repos\stp\stp\obj\Debug\stp.csproj.CopyComplete
 C:\Users\densk\source\repos\stp\stp\obj\Debug\stp.exe
 C:\Users\densk\source\repos\stp\stp\obj\Debug\stp.pdb
+C:\Users\densk\source\repos\stp\stp\obj\Debug\Settings.g.cs
+C:\Users\densk\source\repos\stp\stp\obj\Debug\Settings.baml

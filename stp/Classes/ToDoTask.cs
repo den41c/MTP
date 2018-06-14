@@ -52,61 +52,34 @@ namespace stp.Classes
                 NotifyPropertyChanged("Priority");
             }
         }
-        //public Image Image { get {
-        //        var im = new Image();
-        //        switch (Priority)
-        //        {
-        //            case "Common":
-        //                im.Source = "dsadsa";
-
-        //        }
-        //        return new Image() { Source = };
-        //    } }
-        //public string Priority2
-        //{
-        //    get { return _priority; }
-        //    set
-        //    {
-        //        var cmd = SqlClient.CreateCommand(@"update tasks set Priority = @Priority  
-        //                                            where taskid=@taskid ");
-        //        cmd.Parameters.Add(new SQLiteParameter("Priority", value));
-        //        cmd.Parameters.Add(new SQLiteParameter("taskid", TaskId));
-        //        //cmd.Parameters.Add(new SQLiteParameter("groupid", value ? "+" : "-"));
-        //        cmd.ExecuteNonQuery();
-        //        _priority = value;
-        //        NotifyPropertyChanged("Priority");
-        //    }
-        //}
-        //public string Priority2
-        //{
-        //    get { return _priority; }
-        //    set
-        //    {
-        //        _priority = value;
-
-        //        switch (this.Priority2)
-        //        {
-        //            case "Important":
-        //                Color = Brushes.Black;// Brushes.LightYellow;
-        //                break;
-        //            case "Unimportant":
-        //                Color = Brushes.Black;//Brushes.LimeGreen;
-        //                break;
-        //            case "Common":
-        //                Color = Brushes.Black;//Brushes.Orchid;
-        //                break;
-        //        }
-        //    }
-        //}
+      
 
         public string TaskName { get; set; }
         
         private int taskId;
         public int TaskId { get { return taskId; } set { taskId = value;  /*NotifyPropertyChanged("List_image");*/ } }
         public string Desc;
-        public DateTime? Deadline { get; set; }
+        private DateTime? _deadline;
+        public DateTime? Deadline
+        {
+            get { return _deadline; }
+            set
+            {
+                _deadline = value;
+                Color = Brushes.Transparent;
 
-        public Brush Color;
+                if (_deadline.Value == DateTime.MinValue || _deadline.Value == null)
+                {
+                    return;
+                }
+                if (DateTime.Now > _deadline.Value)
+                    Color = Brushes.Orange;
+                if (DateTime.Now > _deadline.Value.AddDays(2))
+                    Color = Brushes.Red;
+            }
+        }
+
+        public Brush Color { get; set;}
         //public List<string> _files_names;
 
         public List<string> Files_names;
