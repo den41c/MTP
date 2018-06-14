@@ -37,7 +37,9 @@ namespace stp.Classes
         }
         public bool _done;
         //public string _priority;
-        
+
+        public string EventId { get; set; }
+
         public string _priority;
         public string Priority { get { return _priority; }
             set
@@ -59,6 +61,7 @@ namespace stp.Classes
         private int taskId;
         public int TaskId { get { return taskId; } set { taskId = value;  /*NotifyPropertyChanged("List_image");*/ } }
         public string Desc;
+        public DateTime? OldDeadline { get; set; }
         private DateTime? _deadline;
         public DateTime? Deadline
         {

@@ -218,22 +218,23 @@ namespace stp
             var group = (Classes.Group)item;
 
 
-            var cmd = SqlClient.CreateCommand(@"insert into Tasks (taskname, groupid, done, description) 
-                                                    values(@taskname,@groupid,@done,@description);
+            var cmd = SqlClient.CreateCommand(@"insert into Tasks (taskname, groupid, done, description, priority) 
+                                                    values(@taskname,@groupid,@done,@description,@priority);
                                                 select last_insert_rowid();
                                                     ");
             cmd.Parameters.Add(new SQLiteParameter("taskname", TaskTextBox.Text));
             cmd.Parameters.Add(new SQLiteParameter("groupid", group.GroupId));
             cmd.Parameters.Add(new SQLiteParameter("done", "-"));
             cmd.Parameters.Add(new SQLiteParameter("description", ""));
-
+            cmd.Parameters.Add(new SQLiteParameter("priority", "Unimportant"));
             var newTaskId = (int)(long)cmd.ExecuteScalar();
             list_group.Find(w => w.GroupId == group.GroupId).task_list.Add(new ToDoTask()
             {
                 TaskName = TaskTextBox.Text,
                 TaskId = newTaskId,
                 Deadline = null,
-                Files_names = new List<string>()
+                Files_names = new List<string>(),
+                _priority = "Unimportant"
             });
             SetTasksGrid(group.GroupId);
             GroupListBox.Items.Refresh();
@@ -276,6 +277,7 @@ namespace stp
             chang = false;
             TaskGrid.Items.Refresh();
             chang = true;
+            TaskTextBox.IsEnabled = true;
         }
 
         private void Window_Drop(object sender, DragEventArgs e)
@@ -290,7 +292,6 @@ namespace stp
             }
 
             if ((null == droppedFiles) || (!droppedFiles.Any())) { return; }
-            //FilesList.Items.Clear();
 
             foreach (string s in droppedFiles)
             {
@@ -405,8 +406,12 @@ namespace stp
             Description_TextBox.Text = sT.Desc;
             Description_TextBox.Text = sT.Desc;
             Deadline.Value = sT.Deadline;
-            //HourTB.Text = sT.Deadline.Value.Hour.ToString();
-            //MinTB.Text = sT.Deadline.Value.Minute.ToString();
+
+            if (sT.EventId != string.Empty)
+            {
+                //EventButton.Content = ;
+            }
+
             FilesList.Items.Clear();
             foreach (var file in sT.Files_names)
             {
@@ -442,7 +447,9 @@ namespace stp
             Files_Label.Visibility = visible;
             FilesList.Visibility = visible;
             RemoveFile.Visibility = visible;
-
+            Event_Label.Visibility = visible;
+            AddRemoveButton.Visibility = visible;
+            EventButton.Visibility = visible;
 
             return visible == Visibility.Visible;
         }
@@ -524,6 +531,16 @@ namespace stp
                     Daily.Children.Add(border);
                 }
             }
+            for (int i = 1; i < 7; i++)
+            {
+                ListBox listBox = new ListBox();
+                ScrollViewer.SetHorizontalScrollBarVisibility(listBox, ScrollBarVisibility.Disabled);
+                listBox.Name = "DayListBox" + i + 1;
+                Grid.SetRow(listBox, i);
+                Grid.SetColumn(listBox, 1);
+                RegisterName(listBox.Name, listBox);
+                Daily.Children.Add(listBox);
+            }
             #endregion
             #region WeekGrid
             DateTime dateTime = DateTime.Now;
@@ -550,11 +567,21 @@ namespace stp
                     Grid.SetRow(border, i);
                     Grid.SetColumn(border, j);
                     Weekly.Children.Add(border);
+                    if (i != 0 && j != 0)
+                    {
+                        ListBox listBox = new ListBox();
+                        ScrollViewer.SetHorizontalScrollBarVisibility(listBox, ScrollBarVisibility.Disabled);
+                        listBox.Name = "WeekListBox" + i + j;
+                        Grid.SetRow(listBox, i);
+                        Grid.SetColumn(listBox, j);
+                        RegisterName(listBox.Name, listBox);
+                        Weekly.Children.Add(listBox);
+                    }
                 }
             }
             #endregion
             #region MonthGrid
-            dateTime = DateTime.Now;
+            dateTime = Calendars.SelectedDateTime;
             int currentMonth = dateTime.Month;
             while (dateTime.Day != 1)
             {
@@ -565,7 +592,7 @@ namespace stp
             {
                 Label label = new Label();
                 label.Name = "MonthLabel" + row + col;
-                this.RegisterName(label.Name, label);
+                RegisterName(label.Name, label);
                 label.Content = dateTime.ToShortDateString();
                 Grid.SetColumn(label, col);
                 Grid.SetRow(label, row);
@@ -590,6 +617,17 @@ namespace stp
                     Grid.SetRow(border, i);
                     Grid.SetColumn(border, j);
                     Monthly.Children.Add(border);
+                    if (i != 0)
+                    {
+                        ListBox listBox = new ListBox();
+                        ScrollViewer.SetHorizontalScrollBarVisibility(listBox, ScrollBarVisibility.Disabled);
+                        listBox.Name = "MonthListBox" + i + j;
+                        listBox.Items.Add("");
+                        Grid.SetRow(listBox, i);
+                        Grid.SetColumn(listBox, j);
+                        RegisterName(listBox.Name, listBox);
+                        Monthly.Children.Add(listBox);
+                    }
                 }
             }
             #endregion
@@ -597,8 +635,26 @@ namespace stp
             Calendars.RunJob();
             LoadAccounts();
             SetEventList();
-            #region DayEvents
 
+            #region DayEvents
+            foreach (var account in Calendars.Accounts)
+            {
+                if (account.Enabled && account.Events.Items != null && account.Events.Items.Count > 0)
+                {
+                    foreach (var eventItem in account.Events.Items)
+                    {
+                        DateTime? when = eventItem.Start.DateTime;
+                        dateTime = when.Value;
+                        if (dateTime.DayOfYear != Calendars.SelectedDateTime.DayOfYear || Calendars.SelectedDateTime.Year != dateTime.Year)
+                        {
+                            continue;
+                        }
+                        int row1 = dateTime.Hour / 4 + 1, col1 = 1;
+                        ListBox listBox = (ListBox)FindName("DayListBox" + row1 + col1);
+                        listBox.Items.Add(eventItem.Summary);
+                    }
+                }
+            }
             #endregion
             #region WeekEwents
             foreach (var account in Calendars.Accounts)
@@ -609,30 +665,14 @@ namespace stp
                     {
                         DateTime? when = eventItem.Start.DateTime;
                         dateTime = when.Value;
-                        if (calendar.GetWeekOfYear(Calendars.SelectedDateTime, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) != calendar.GetWeekOfYear(Calendars.SelectedDateTime, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) || Calendars.SelectedDateTime.Year != dateTime.Year)
+                        if (calendar.GetWeekOfYear(dateTime, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) != calendar.GetWeekOfYear(Calendars.SelectedDateTime, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) || Calendars.SelectedDateTime.Year != dateTime.Year)
                         {
                             continue;
                         }
-                        while ((int)dateTime.DayOfWeek != 1)
-                        {
-                            dateTime = dateTime.AddDays(-1);
-                        }
-                        int row1 = 1, col1 = (int)dateTime.DayOfWeek;
-                        while (dateTime != when.Value)
-                        {
-                            col1++;
-                            if (col1 == 7)
-                            {
-                                col1 = 0;
-                                row1++;
-                            }
-                            dateTime = dateTime.AddDays(1);
-
-                        }
-                        Label label = (Label)this.FindName("MonthLabel" + row1 + col1);
-                        label.Content += "\n" + eventItem.Summary;
+                        int row1 = dateTime.Hour / 4 + 1, col1 = (int)dateTime.DayOfWeek + 1;
+                        ListBox listBox = (ListBox)FindName("WeekListBox" + row1 + col1);
+                        listBox.Items.Add(eventItem.Summary);
                     }
-
                 }
             }
             #endregion
@@ -665,10 +705,9 @@ namespace stp
                             dateTime = dateTime.AddDays(1);
 
                         }
-                        Label label = (Label)this.FindName("MonthLabel" + row1 + col1);
-                        label.Content += "\n" + eventItem.Summary;
+                        ListBox listBox = (ListBox)FindName("MonthListBox" + row1 + col1);
+                        listBox.Items.Add(eventItem.Summary);
                     }
-
                 }
             }
             #endregion
@@ -698,6 +737,7 @@ namespace stp
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Calendars.AuthorizationNew();
+            SetEventList();
         }
         private void RemoveFile_Click(object sender, RoutedEventArgs e)
         {
@@ -772,9 +812,7 @@ namespace stp
             set.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             set.Show();
             Setting = set.Setting;
-        }
-
-       
+        }      
 
         private void Window_Closed(object sender, EventArgs e)
         {
@@ -844,9 +882,10 @@ namespace stp
                 }
             }
 
-            EventsListBox.ItemsSource = AllEventsList.OrderBy(w => w.EventDate).
+            EventsListBox.ItemsSource = AllEventsList.OrderBy(w => w.EventDate).Where(w => w.EventDate > DateTime.Now).
                 Select(w=>string.Format("{0} {1} - {2}", w.EventDate.Value.ToShortDateString(), w.EventDate.Value.ToShortTimeString(),w.Summary)).Take(10);
         }
+
         private void RefreshGreed()
         {
 
@@ -870,8 +909,53 @@ namespace stp
                 {
                     dir.Delete(true);
                 }
+                Calendars.Accounts.Remove(Calendars.Accounts[AccountListView.SelectedIndex]);
             }
-            Calendars.Accounts.Remove(Calendars.Accounts[AccountListView.SelectedIndex]);
+           
+            SetEventList();
+        }
+        private ToDoTask DropTask;
+        
+        private void TextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DropTask = SelectedTask();
+            object item = DropTask;
+            if (item != null)
+                DragDrop.DoDragDrop(TaskGrid, item, DragDropEffects.Move);
+        }
+
+        private void Control_Drop(object sender, DragEventArgs e)
+        {
+            var group_id = (int)((Label)sender).Tag;
+            var group_to_remove_task = SelectedGroup();
+            group_to_remove_task.task_list.Remove(DropTask);
+            list_group.Where(w => w.GroupId == group_id).First().task_list.Add(DropTask);
+            GroupListBox.Items.Refresh();
+
+            TaskGrid.Items.Refresh();
+            GroupListBox.SelectedItem = list_group.Find(w => (w.GroupId == group_id));
+
+            var cmd = SqlClient.CreateCommand(@"update tasks set groupid = @groupid  
+                                                    where taskid=@taskid ");
+            cmd.Parameters.Add(new SQLiteParameter("groupid", group_id));
+            cmd.Parameters.Add(new SQLiteParameter("taskid", DropTask.TaskId));
+            cmd.ExecuteNonQuery();
+
+        }
+
+        private void EventButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        bool JustVievCalendar = false;
+        private void AddRemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddAccount.IsEnabled = false;
+            DeleteAccount.IsEnabled = false;
+            JustVievCalendar = true;
+            Tabcontrol.SelectedItem = Calendar;
+
+
         }
     }
 }
