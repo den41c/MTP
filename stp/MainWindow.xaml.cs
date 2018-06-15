@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -407,10 +408,14 @@ namespace stp
             Description_TextBox.Text = sT.Desc;
             Description_TextBox.Text = sT.Desc;
             Deadline.Value = sT.Deadline;
-
-            if (sT.EventId != string.Empty)
+            AddRemoveButton.Content = "Add";
+            EventButton.Visibility = Visibility.Hidden;
+            if (sT.EventId != null && sT.EventId != string.Empty)
             {
-                //EventButton.Content = ;
+                var Event = Calendars.GetEventById(sT.EventId);
+                EventButton.Content = Event.Summary;
+                EventButton.Visibility = Visibility.Visible;
+                AddRemoveButton.Content = "Remove";
             }
 
             FilesList.Items.Clear();
@@ -535,6 +540,7 @@ namespace stp
             for (int i = 1; i < 7; i++)
             {
                 ListBox listBox = new ListBox();
+                listBox.MouseDoubleClick += ListBox_MouseDoubleClick;
                 ScrollViewer.SetHorizontalScrollBarVisibility(listBox, ScrollBarVisibility.Disabled);
                 listBox.Name = "DayListBox" + i + 1;
                 Grid.SetRow(listBox, i);
@@ -571,6 +577,7 @@ namespace stp
                     if (i != 0 && j != 0)
                     {
                         ListBox listBox = new ListBox();
+                        listBox.MouseDoubleClick += ListBox_MouseDoubleClick;
                         ScrollViewer.SetHorizontalScrollBarVisibility(listBox, ScrollBarVisibility.Disabled);
                         listBox.Name = "WeekListBox" + i + j;
                         Grid.SetRow(listBox, i);
@@ -598,6 +605,7 @@ namespace stp
                     if (i != 0)
                     {
                         ListBox listBox = new ListBox();
+                        listBox.MouseDoubleClick += ListBox_MouseDoubleClick;
                         ScrollViewer.SetHorizontalScrollBarVisibility(listBox, ScrollBarVisibility.Disabled);
                         listBox.Name = "MonthListBox" + i + j;
                         //listBox.Items.Add("");
@@ -829,9 +837,9 @@ namespace stp
                             Text = eventItem.Summary,
                             FontWeight = FontWeights.Bold,
                             Foreground = new SolidColorBrush(account.Color), //todo
-                            Tag = new ItemList { ID = eventItem.Id, Type = TypeOfItem.Event }
+                            Tag = eventItem
                         };
-
+                        
                         listBox.Items.Add(TextBlock);
                        // listBox.Items.Add(eventItem.Summary);
                     }
@@ -860,9 +868,9 @@ namespace stp
                             Text = eventItem.Summary,
                             FontWeight = FontWeights.Bold,
                             Foreground = new SolidColorBrush(account.Color), //todo
-                            Tag = new ItemList { ID = eventItem.Id, Type = TypeOfItem.Event }
+                            Tag = eventItem
                         };
-
+                        //listBox.MouseDoubleClick += ListBox_MouseDoubleClick;
                         listBox.Items.Add(TextBlock);
                         //listBox.Items.Add(eventItem.Summary);
                     }
@@ -880,7 +888,7 @@ namespace stp
                     {
                         DateTime? when = eventItem.Start.DateTime;
                         dateTime = when.Value;
-                        if (DateTime.Now.Month != dateTime.Month || DateTime.Now.Year != dateTime.Year)
+                        if (Calendars.SelectedDateTime.Month != dateTime.Month || Calendars.SelectedDateTime.Year != dateTime.Year)
                         {
                             continue;
                         }
@@ -906,14 +914,49 @@ namespace stp
                             Text = eventItem.Summary,
                             FontWeight = FontWeights.Bold,
                             Foreground = new SolidColorBrush(account.Color), //todo
-                            Tag = new ItemList { ID = eventItem.Id, Type = TypeOfItem.Event }
+                            Tag = eventItem
                         };
-
+                        //listBox.MouseDoubleClick += ListBox_MouseDoubleClick;
                         listBox.Items.Add(TextBlock);
                         //listBox.Items.Add(eventItem.Summary);
                     }
                 }
             }
+        }
+
+        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            
+            
+            var list = (ListBox)sender;
+            
+            var item = (TextBlock)list.SelectedItem;
+
+            if (item.Tag is ItemList)
+            {
+                return;
+            }
+            var Event = (Google.Apis.Calendar.v3.Data.Event)(item.Tag);
+            
+            if (JustVievCalendar)
+            {
+                //todo den41c
+                var task = SelectedTask();
+                task.OldDeadline = task.Deadline;
+                task.EventId = Event.Id;
+                task.Deadline = Event.Start.DateTime;
+                SetTaskInfo();
+                
+                Tabcontrol.SelectedItem = Tasks;
+            }
+            else
+            {
+                var eventForm = new Event(Event);
+                eventForm.Show();
+            }
+            JustVievCalendar = false;
+
+
         }
 
         private void PopulateDaylyTasks()
@@ -995,7 +1038,7 @@ namespace stp
                         DateTime? when = task.Deadline;
                         if (when == null) { continue; }
                         dateTime = when.Value;
-                        if (DateTime.Now.Month != dateTime.Month || DateTime.Now.Year != dateTime.Year)
+                        if (Calendars.SelectedDateTime.Month != dateTime.Month || Calendars.SelectedDateTime.Year != dateTime.Year)
                         {
                             continue;
                         }
@@ -1023,11 +1066,19 @@ namespace stp
                             Foreground = Brushes.Green,
                             Tag = new ItemList { ID = task.TaskId.ToString(), Type = TypeOfItem.ToDoTask }
                         };
+                       
 
                         listBox.Items.Add(TextBlock);
                     }
                 }
             }
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+           
+
+
         }
 
         private void TaskGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -1037,7 +1088,9 @@ namespace stp
                 e.Column.Header.ToString() == "Deadline" ||
                 e.Column.Header.ToString() == "Color" ||
                 e.Column.Header.ToString() == "Done" ||
-                e.Column.Header.ToString() == "TaskName"
+                e.Column.Header.ToString() == "TaskName" ||
+                e.Column.Header.ToString() == "EventId" ||
+                e.Column.Header.ToString() == "OldDeadline"
                 )
             {
                 e.Cancel = true;
@@ -1143,15 +1196,15 @@ namespace stp
 
         private void LeftArrow_Click(object sender, RoutedEventArgs e)
         {
-            switch (comboBoxCalendarView.SelectedItem.ToString())
+            switch (comboBoxCalendarView.SelectedIndex)
             {
-                case "Daily":
+                case 0:
                     Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddDays(-1);
                     break;
-                case "Weekly":
+                case 1:
                     Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddDays(-7);
                     break;
-                case "Monthly":
+                case 2:
                     Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddMonths(-1);
                     break;
                 default:
@@ -1162,15 +1215,15 @@ namespace stp
 
         private void RightArrow_Click(object sender, RoutedEventArgs e)
         {
-            switch (comboBoxCalendarView.SelectedValue.ToString())
+            switch (comboBoxCalendarView.SelectedIndex)
             {
-                case "Daily":
+                case 0:
                     Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddDays(1);
                     break;
-                case "Weekly":
+                case 1:
                     Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddDays(7);
                     break;
-                case "Monthly":
+                case 2:
                     Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddMonths(1);
                     break;
                 default:
@@ -1224,10 +1277,17 @@ namespace stp
         
         private void TextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            DropTask = SelectedTask();
+            var group = SelectedGroup();
+
+            DropTask = group.task_list.Where(w => w.TaskName == ((TextBox)sender).Text).First();
             object item = DropTask;
             if (item != null)
                 DragDrop.DoDragDrop(TaskGrid, item, DragDropEffects.Move);
+
+            //DropTask = SelectedTask();
+            //object item = DropTask;
+            //if (item != null)
+            //    DragDrop.DoDragDrop(TaskGrid, item, DragDropEffects.Move);
         }
 
         private void Control_Drop(object sender, DragEventArgs e)

@@ -80,6 +80,14 @@ namespace stp
 
     static class Calendars
     {
+        static public Google.Apis.Calendar.v3.Data.Event GetEventById(string id)
+        {
+            foreach (var account in Accounts)
+                foreach (var item in account.Events.Items)
+                    if (item.Id == id)
+                        return item;
+            return null;
+        }
         public static DateTime SelectedDateTime = DateTime.Now;
 
         public static AccountsForSerialization AccountsForSerialization = new AccountsForSerialization();

@@ -19,6 +19,15 @@ namespace stp
     /// </summary>
     public partial class Event : Window
     {
+        //public Google.Apis.Calendar.v3.Data.Event ViewEvent;
+
+        public Event(Google.Apis.Calendar.v3.Data.Event ViewEvent)
+        {
+            InitializeComponent();
+
+            //ViewEvent.
+        }
+
         public Event()
         {
             InitializeComponent();
