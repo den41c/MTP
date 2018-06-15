@@ -1383,5 +1383,15 @@ namespace stp
             eventForm.Show();
 
         }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshCalendarTab();
+        }
+
+        private void Calendar_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            RefreshCalendarTab();
+        }
     }
 }

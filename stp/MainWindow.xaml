@@ -109,7 +109,7 @@
                     <Button x:Name="EventButton" Content="" Grid.Column="2" HorizontalAlignment="Left" Margin="353,218,0,0" VerticalAlignment="Top" Width="178" Height="23" Click="EventButton_Click"/>
                 </Grid>
             </TabItem>
-            <TabItem Name="Calendar" Header="Calendar">
+            <TabItem Name="Calendar" Header="Calendar" ContextMenuOpening="Calendar_ContextMenuOpening">
                 <Grid Background="#FFE5E5E5" ContextMenuOpening="Grid_ContextMenuOpening" Margin="0,0,0,0">
                     <ComboBox Name ="comboBoxCalendarView" HorizontalAlignment="Left" Margin="4.5,10,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComboBox_SelectionChanged" Grid.Column="1">
                         <ComboBoxItem >Daily</ComboBoxItem>
@@ -213,7 +213,7 @@
                                             <ColumnDefinition Width="50"></ColumnDefinition>
                                             <ColumnDefinition Width="150"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
-                                        <CheckBox IsChecked="{Binding Path=Enabled}"/>
+                                        <CheckBox IsChecked="{Binding Path=Enabled}" Click="CheckBox_Click"/>
                                         <xctk:ColorPicker Grid.Column="1" Width="45" SelectedColor="{Binding Path=Color}" SelectedColorChanged="ColorPicker_SelectedColorChanged" />
                                         <TextBlock Grid.Column="2" Text="{Binding Path=Email}"/>
                                     </Grid>
