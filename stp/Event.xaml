@@ -6,31 +6,41 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:stp"
         mc:Ignorable="d"
-        Title="Event" Height="500" Width="450">
-    <Grid Margin="0,0,0,0">
-        <Label Content="Date" HorizontalAlignment="Left" Margin="86,20,0,0" VerticalAlignment="Top"/>
-        <xctk:DateTimePicker  x:Name="Deadline" Format="UniversalSortableDateTime" Language="en-br" Localization.Comments="en-br" Localization.Attributes="en-br" HorizontalAlignment="Left" Margin="126,20,0,0" VerticalAlignment="Top" Width="263" CultureInfo="en-AU" Height="26"/>
-        <Label Content="Name" HorizontalAlignment="Left" Margin="79,48,0,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="126,51,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263"/>
-        <Label Content="Place" HorizontalAlignment="Left" Margin="83,76,0,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="126,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263"/>
-        <Label Content="Description" HorizontalAlignment="Left" Margin="51,104,0,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="126,107,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263"/>
-        <Label Content="Duration" HorizontalAlignment="Left" Margin="65,132,0,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="126,135,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263"/>
-        <Label Content="Notify before" HorizontalAlignment="Left" Margin="41,160,0,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="126,163,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263"/>
-        <ListView HorizontalAlignment="Left" Height="132" Margin="126,191,0,0" VerticalAlignment="Top" Width="263">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn/>
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <Label Content="Guest" HorizontalAlignment="Left" Margin="81,191,0,0" VerticalAlignment="Top"/>
-        <Button Content="Edit" HorizontalAlignment="Left" Margin="314,328,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Content="Add" HorizontalAlignment="Left" Margin="314,353,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Content="Save" HorizontalAlignment="Left" Margin="314,378,0,0" VerticalAlignment="Top" Width="75"/>
+        Title="Event" Height="494" Width="482">
+    <Grid Margin="10,0,0,0">
+        <Label Content="Date" HorizontalAlignment="Left" Margin="58,23,0,0" VerticalAlignment="Top"/>
+        <xctk:DateTimePicker x:Name="DateField" Format="UniversalSortableDateTime" Language="en-br" Localization.Comments="en-br" Localization.Attributes="en-br" HorizontalAlignment="Left" Margin="98,23,0,0" VerticalAlignment="Top" Width="340" CultureInfo="en-AU" Height="26"/>
+        <Label Content="Name" HorizontalAlignment="Left" Margin="50,51,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="NameField" HorizontalAlignment="Left" Height="23" Margin="98,54,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="340"/>
+        <Label Content="Place" HorizontalAlignment="Left" Margin="54,79,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="PlaceField" HorizontalAlignment="Left" Height="23" Margin="98,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="340"/>
+        <Label Content="Description" HorizontalAlignment="Left" Margin="22,107,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="DescrioptionField" HorizontalAlignment="Left" Height="117" Margin="98,110,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="340"/>
+        <Label Content="Duration" HorizontalAlignment="Left" Margin="36,229,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="DurationField" HorizontalAlignment="Left" Height="23" Margin="98,232,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="340"/>
+        <Label Content="Notify before" HorizontalAlignment="Left" Margin="12,257,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="NotifyBeforeField" HorizontalAlignment="Left" Height="23" Margin="98,260,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="340"/>
+        <Label Content="Guests" HorizontalAlignment="Left" Margin="46,288,0,0" VerticalAlignment="Top"/>
 
+        <ListBox x:Name="GuestsListView" HorizontalAlignment="Left" Height="132" Margin="98,288,0,0" VerticalAlignment="Top" Width="340" ItemsSource="{Binding}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30"></ColumnDefinition>
+                            <ColumnDefinition Width="100"></ColumnDefinition>
+                            <ColumnDefinition Width="200"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox IsChecked="{Binding Path=Optional}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Path=ResponseStatus}"/>
+                        <TextBlock Grid.Column="2" Text="{Binding Path=Email}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Button Visibility="Hidden" Content="Add" HorizontalAlignment="Left" Margin="192,425,0,0" VerticalAlignment="Top" Width="74"/>
+        <Button Visibility="Hidden" Content="Save" HorizontalAlignment="Left" Margin="286,425,0,0" VerticalAlignment="Top" Width="74"/>
+        <Button Visibility="Hidden" Content="Remove" HorizontalAlignment="Left" Margin="98,425,0,0" VerticalAlignment="Top" Width="74"/>
     </Grid>
 </Window>

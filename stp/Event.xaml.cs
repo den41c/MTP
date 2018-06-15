@@ -20,17 +20,25 @@ namespace stp
     public partial class Event : Window
     {
         //public Google.Apis.Calendar.v3.Data.Event ViewEvent;
-
-        public Event(Google.Apis.Calendar.v3.Data.Event ViewEvent)
-        {
-            InitializeComponent();
-
-            //ViewEvent.
-        }
+        public Google.Apis.Calendar.v3.Data.Event TargetEvent;
 
         public Event()
         {
             InitializeComponent();
+        }
+        public Event(Google.Apis.Calendar.v3.Data.Event targetEvent)
+        {
+            InitializeComponent();
+
+            TargetEvent = targetEvent;
+
+            DateField.Value = TargetEvent.Start.DateTime;
+            NameField.Text = TargetEvent.Summary;
+            PlaceField.Text = TargetEvent.Location;
+            DescrioptionField.Text = TargetEvent.Description;
+            DurationField.Text = (TargetEvent.End.DateTime - TargetEvent.Start.DateTime).ToString();
+            NotifyBeforeField.Text = "30";
+            GuestsListView.ItemsSource = TargetEvent.Attendees;
         }
     }
 }
