@@ -37,7 +37,7 @@ namespace stp
             PlaceField.Text = TargetEvent.Location;
             DescrioptionField.Text = TargetEvent.Description;
             DurationField.Text = (TargetEvent.End.DateTime - TargetEvent.Start.DateTime).ToString();
-            NotifyBeforeField.Text = "30";
+            NotifyBeforeField.Text = "00:30:00";
             GuestsListView.ItemsSource = TargetEvent.Attendees;
         }
     }

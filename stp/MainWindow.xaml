@@ -11,6 +11,10 @@
         Title="MainWindow" Height="640" Width="960" Loaded="Window_Loaded"  AllowDrop="True" Drop="Window_Drop" Closed="Window_Closed">
 
     <Grid Margin="0,0,0,-6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="89*"/>
+            <ColumnDefinition Width="387*"/>
+        </Grid.ColumnDefinitions>
         <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="64*"/>
             <ColumnDefinition Width="266*"/>
@@ -18,7 +22,7 @@
             <ColumnDefinition Width="286*"/>
         </Grid.ColumnDefinitions>-->
         <!--<ListBox x:Name="ListGroup1" HorizontalAlignment="Left" Height="374" Margin="289,10,0,0" VerticalAlignment="Top" Width="192"/>-->
-        <TabControl x:Name="Tabcontrol" HorizontalAlignment="Left" Height="554" Margin="10,10,0,0" VerticalAlignment="Top" Width="914" Grid.ColumnSpan="4">
+        <TabControl x:Name="Tabcontrol" HorizontalAlignment="Left" Height="554" Margin="10,10,0,0" VerticalAlignment="Top" Width="914" Grid.ColumnSpan="2">
             <TabItem Name="Tasks" Header="Tasks">
                 <Grid Background="#FFE5E5E5" Margin="0,0,0,0">
                     <Grid.ColumnDefinitions>

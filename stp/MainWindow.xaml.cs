@@ -470,6 +470,7 @@ namespace stp
                 task_list.Find(w => w.TaskId == SelectedTask().TaskId).TaskName = Name_TextBox.Text;
                 SaveChanges();
             }
+            RefreshCalendarTab();
 
         }
 
@@ -825,7 +826,11 @@ namespace stp
                     foreach (var eventItem in account.Events.Items)
                     {
                         DateTime? when = eventItem.Start.DateTime;
-                        dateTime = when.Value;
+                        if (when == null)
+                        {
+                            dateTime = DateTime.ParseExact(eventItem.Start.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                        }
+                        else { dateTime = when.Value; }
                         if (dateTime.DayOfYear != Calendars.SelectedDateTime.DayOfYear || Calendars.SelectedDateTime.Year != dateTime.Year)
                         {
                             continue;
@@ -856,7 +861,11 @@ namespace stp
                     foreach (var eventItem in account.Events.Items)
                     {
                         DateTime? when = eventItem.Start.DateTime;
-                        dateTime = when.Value;
+                        if (when == null)
+                        {
+                            dateTime = DateTime.ParseExact(eventItem.Start.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                        }
+                        else { dateTime = when.Value; }
                         if (calendar.GetWeekOfYear(dateTime, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) != calendar.GetWeekOfYear(Calendars.SelectedDateTime, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) || Calendars.SelectedDateTime.Year != dateTime.Year)
                         {
                             continue;
@@ -887,7 +896,12 @@ namespace stp
                     foreach (var eventItem in account.Events.Items)
                     {
                         DateTime? when = eventItem.Start.DateTime;
-                        dateTime = when.Value;
+                        if (when == null)
+                        {
+                            dateTime = DateTime.ParseExact(eventItem.Start.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                        }
+                        else { dateTime = when.Value; }
+                       
                         if (Calendars.SelectedDateTime.Month != dateTime.Month || Calendars.SelectedDateTime.Year != dateTime.Year)
                         {
                             continue;
@@ -1358,8 +1372,8 @@ namespace stp
                 RefreshCalendarTab();
                 return;
             }
-            AddAccount.IsEnabled = false;
-            DeleteAccount.IsEnabled = false;
+            //AddAccount.IsEnabled = false;
+            //DeleteAccount.IsEnabled = false;
             JustVievCalendar = true;
             Tabcontrol.SelectedItem = Calendar;
 
@@ -1393,5 +1407,6 @@ namespace stp
         {
             RefreshCalendarTab();
         }
+
     }
 }
