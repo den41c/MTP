@@ -116,6 +116,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\ItemList.cs" />
     <Compile Include="Event.xaml.cs">
       <DependentUpon>Event.xaml</DependentUpon>
     </Compile>

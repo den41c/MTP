@@ -183,3 +183,5 @@ C:\Users\dovorob\source\repos\MTP2\stp\obj\Debug\Settings.g.cs
 C:\Users\dovorob\source\repos\MTP2\stp\obj\Debug\Settings.baml
 C:\Users\dovorob\source\repos\MTP2\stp\obj\Debug\Event.g.cs
 C:\Users\dovorob\source\repos\MTP2\stp\obj\Debug\Event.baml
+C:\Users\densk\source\repos\stp\stp\obj\Debug\Event.g.cs
+C:\Users\densk\source\repos\stp\stp\obj\Debug\Event.baml

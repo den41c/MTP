@@ -638,6 +638,10 @@ namespace stp
             PopulateDaylyEvents();
             PopulateWeeklyEvents();
             PopulateMonthlyEvents();
+
+            PopulateDaylyTasks();
+            PopulateWeeklyTasks();
+            PopulateMonthlyTasks();
         }
         private void RecreateWeeklyLabels()
         {
@@ -744,7 +748,16 @@ namespace stp
                         }
                         int row1 = dateTime.Hour / 4 + 1, col1 = 1;
                         ListBox listBox = (ListBox)FindName("DayListBox" + row1 + col1);
-                        listBox.Items.Add(eventItem.Summary);
+                        var TextBlock = new TextBlock()
+                        {
+                            Text = eventItem.Summary,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = new SolidColorBrush(account.Color), //todo
+                            Tag = new ItemList { ID = eventItem.Id, Type = TypeOfItem.Event }
+                        };
+
+                        listBox.Items.Add(TextBlock);
+                       // listBox.Items.Add(eventItem.Summary);
                     }
                 }
             }
@@ -766,7 +779,16 @@ namespace stp
                         }
                         int row1 = dateTime.Hour / 4 + 1, col1 = (int)dateTime.DayOfWeek + 1;
                         ListBox listBox = (ListBox)FindName("WeekListBox" + row1 + col1);
-                        listBox.Items.Add(eventItem.Summary);
+                        var TextBlock = new TextBlock()
+                        {
+                            Text = eventItem.Summary,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = new SolidColorBrush(account.Color), //todo
+                            Tag = new ItemList { ID = eventItem.Id, Type = TypeOfItem.Event }
+                        };
+
+                        listBox.Items.Add(TextBlock);
+                        //listBox.Items.Add(eventItem.Summary);
                     }
                 }
             }
@@ -803,7 +825,130 @@ namespace stp
 
                         }
                         ListBox listBox = (ListBox)FindName("MonthListBox" + row1 + col1);
-                        listBox.Items.Add(eventItem.Summary);
+                        var TextBlock = new TextBlock()
+                        {
+                            Text = eventItem.Summary,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = new SolidColorBrush(account.Color), //todo
+                            Tag = new ItemList { ID = eventItem.Id, Type = TypeOfItem.Event }
+                        };
+
+                        listBox.Items.Add(TextBlock);
+                        //listBox.Items.Add(eventItem.Summary);
+                    }
+                }
+            }
+        }
+
+        private void PopulateDaylyTasks()
+        {
+            DateTime dateTime;
+            foreach (var group in list_group)
+            {
+                if (true/*account.Enabled && account.Events.Items != null && account.Events.Items.Count > 0*/)
+                {
+                    foreach (var task in group.task_list)
+                    {
+                        DateTime? when = task.Deadline;
+                        if (when == null) { continue; }
+                        dateTime = when.Value;
+                        if (dateTime.DayOfYear != Calendars.SelectedDateTime.DayOfYear || Calendars.SelectedDateTime.Year != dateTime.Year)
+                        {
+                            continue;
+                        }
+                        int row1 = dateTime.Hour / 4 + 1, col1 = 1;
+                        ListBox listBox = (ListBox)FindName("DayListBox" + row1 + col1);
+
+                        var TextBlock = new TextBlock()
+                        {
+                            Text = task.TaskName,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = Brushes.Green,
+                            Tag = new ItemList { ID = task.TaskId.ToString(), Type = TypeOfItem.ToDoTask }
+                        };
+
+                        listBox.Items.Add(TextBlock);
+                    }
+                }
+            }
+        }
+
+        
+
+        private void PopulateWeeklyTasks()
+        {
+            DateTime dateTime;
+            foreach (var group in list_group)
+            {
+                if (true/*account.Enabled && account.Events.Items != null && account.Events.Items.Count > 0*/)
+                {
+                    foreach (var task in group.task_list)
+                    {
+                        DateTime? when = task.Deadline;
+                        if (when == null) { continue; }
+                        dateTime = when.Value;
+                        if (calendar.GetWeekOfYear(dateTime, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) != calendar.GetWeekOfYear(Calendars.SelectedDateTime, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) || Calendars.SelectedDateTime.Year != dateTime.Year)
+                        {
+                            continue;
+                        }
+                        int row1 = dateTime.Hour / 4 + 1, col1 = (int)dateTime.DayOfWeek + 1;
+                        ListBox listBox = (ListBox)FindName("WeekListBox" + row1 + col1);
+                        var TextBlock = new TextBlock()
+                        {
+                            Text = task.TaskName,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = Brushes.Green,
+                            Tag = new ItemList { ID = task.TaskId.ToString(), Type = TypeOfItem.ToDoTask }
+                        };
+                        
+                        listBox.Items.Add(TextBlock);
+                        
+                    }
+                }
+            }
+        }
+        private void PopulateMonthlyTasks()
+        {
+            DateTime dateTime;
+            foreach (var group in list_group)
+            {
+                if (true/*account.Enabled && account.Events.Items != null && account.Events.Items.Count > 0*/)
+                {
+                    foreach (var task in group.task_list)
+                    {
+                        DateTime? when = task.Deadline;
+                        if (when == null) { continue; }
+                        dateTime = when.Value;
+                        if (DateTime.Now.Month != dateTime.Month || DateTime.Now.Year != dateTime.Year)
+                        {
+                            continue;
+                        }
+                        while (dateTime.Day != 1)
+                        {
+                            dateTime = dateTime.AddDays(-1);
+                        }
+                        int row1 = 1, col1 = (int)dateTime.DayOfWeek;
+                        while (dateTime != when.Value)
+                        {
+                            col1++;
+                            if (col1 == 7)
+                            {
+                                col1 = 0;
+                                row1++;
+                            }
+                            dateTime = dateTime.AddDays(1);
+
+                        }
+                        ListBox listBox = (ListBox)FindName("MonthListBox" + row1 + col1);
+                        var TextBlock = new TextBlock()
+                        {
+                            Text = task.TaskName,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = Brushes.Green,
+                            Tag = new ItemList { ID = task.TaskId.ToString(), Type = TypeOfItem.ToDoTask }
+                        };
+
+                        listBox.Items.Add(TextBlock);
                     }
                 }
             }
