@@ -125,7 +125,6 @@
                             <RowDefinition Height="1*" />
                         </Grid.RowDefinitions>
                         <Label>Time</Label>
-                        <Label Grid.Column="1">Events</Label>
                         <Label Grid.Row="1">00:00</Label>
                         <Label Grid.Row="2">04:00</Label>
                         <Label Grid.Row="3">08:00</Label>

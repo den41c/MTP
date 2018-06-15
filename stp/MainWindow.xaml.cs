@@ -541,7 +541,7 @@ namespace stp
                 RegisterName(listBox.Name, listBox);
                 Daily.Children.Add(listBox);
             }
-            #endregion
+            #endregion           
             #region WeekGrid
             DateTime dateTime = DateTime.Now;
             while (dateTime.DayOfWeek != DayOfWeek.Sunday)
@@ -581,30 +581,7 @@ namespace stp
             }
             #endregion
             #region MonthGrid
-            dateTime = Calendars.SelectedDateTime;
-            int currentMonth = dateTime.Month;
-            while (dateTime.Day != 1)
-            {
-                dateTime = dateTime.AddDays(-1);
-            }
-            int row = 1, col = (int)dateTime.DayOfWeek;
-            while (dateTime.Month == currentMonth)
-            {
-                Label label = new Label();
-                label.Name = "MonthLabel" + row + col;
-                RegisterName(label.Name, label);
-                label.Content = dateTime.ToShortDateString();
-                Grid.SetColumn(label, col);
-                Grid.SetRow(label, row);
-                col++;
-                if (col == 7)
-                {
-                    col = 0;
-                    row++;
-                }
-                Monthly.Children.Add(label);
-                dateTime = dateTime.AddDays(1);
-            }
+
             for (int i = 0; i < 7; i++)
             {
                 for (int j = 0; j < 7; j++)
@@ -622,7 +599,7 @@ namespace stp
                         ListBox listBox = new ListBox();
                         ScrollViewer.SetHorizontalScrollBarVisibility(listBox, ScrollBarVisibility.Disabled);
                         listBox.Name = "MonthListBox" + i + j;
-                        listBox.Items.Add("");
+                        //listBox.Items.Add("");
                         Grid.SetRow(listBox, i);
                         Grid.SetColumn(listBox, j);
                         RegisterName(listBox.Name, listBox);
@@ -630,13 +607,129 @@ namespace stp
                     }
                 }
             }
+            dateTime = Calendars.SelectedDateTime;
+            int currentMonth = dateTime.Month;
+            while (dateTime.Day != 1)
+            {
+                dateTime = dateTime.AddDays(-1);
+            }
+            int row = 1, col = (int)dateTime.DayOfWeek;
+            while (dateTime.Month == currentMonth)
+            {
+                ListBox listBox = (ListBox)FindName("MonthListBox" + row + col);
+                col++;
+                if (col == 7)
+                {
+                    col = 0;
+                    row++;
+                }
+                var t = new ListBoxItem();
+                t.IsEnabled = false;
+                t.Content = dateTime.ToShortDateString();
+                listBox.Items.Add(t);
+                dateTime = dateTime.AddDays(1);
+            }
             #endregion
 
             Calendars.RunJob();
             LoadAccounts();
             SetEventList();
 
-            #region DayEvents
+            PopulateDaylyEvents();
+            PopulateWeeklyEvents();
+            PopulateMonthlyEvents();
+        }
+        private void RecreateWeeklyLabels()
+        {
+            List<Label> removeList = new List<Label>();
+            foreach (var item in Weekly.Children)
+            {
+                if (item.GetType() == typeof(Label))
+                    removeList.Add((Label)item);
+            }
+            foreach (var item in removeList)
+                if(!(item.Content == "Time" || item.Content == "00:00" || item.Content == "04:00" || item.Content == "08:00" || item.Content == "12:00" || item.Content == "16:00" || item.Content == "20:00"))
+                    Weekly.Children.Remove(item);          
+
+            DateTime dateTime = Calendars.SelectedDateTime;
+            for (int i = 1; i < 8; i++)
+            {
+                Label label = new Label();
+                label.Content = dateTime.ToString("ddd") + ' ' + dateTime.ToShortDateString();
+                dateTime = dateTime.AddDays(1);
+                Grid.SetColumn(label, i);
+                Weekly.Children.Add(label);
+            }
+        }
+        private void RecreateMonthlyLabels()
+        {
+            List<Label> removeList = new List<Label>();
+            foreach (var item in Monthly.Children)
+            {
+                if (item.GetType() == typeof(Label))
+                    removeList.Add((Label)item);
+            }
+            foreach (var item in removeList)
+                Monthly.Children.Remove(item);
+
+            DateTime dateTime = Calendars.SelectedDateTime;
+            int currentMonth = dateTime.Month;
+            while (dateTime.Day != 1)
+            {
+                dateTime = dateTime.AddDays(-1);
+            }
+            int row = 1, col = (int)dateTime.DayOfWeek;
+            while (dateTime.Month == currentMonth)
+            {
+                ListBox listBox = (ListBox)FindName("MonthListBox" + row + col);
+                col++;
+                if (col == 7)
+                {
+                    col = 0;
+                    row++;
+                }
+                var t = new ListBoxItem();
+                t.IsEnabled = false;
+                t.Content = dateTime.ToShortDateString();
+                listBox.Items.Add(t);
+                dateTime = dateTime.AddDays(1);
+            }
+        }
+
+        private void CleanDaylyLists()
+        {
+            for (int i = 1; i < 7; i++)
+            {
+                ListBox listBox = (ListBox)FindName("DayListBox" + i + 1);
+                listBox.Items.Clear();
+            }
+        }
+        private void CleanWeeklyLists()
+        {
+            for (int i = 1; i < 7; i++)
+            {
+                for (int j = 1; j < 8; j++)
+                {
+                    ListBox listBox = (ListBox)FindName("WeekListBox" + i + j);
+                    listBox.Items.Clear();
+                }
+            }
+        }
+        private void CleanMonthlyLists()
+        {
+            for (int i = 1; i < 7; i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    ListBox listBox = (ListBox)FindName("MonthListBox" + i + j);
+                    listBox.Items.Clear();
+                }
+            }
+        }
+
+        private void PopulateDaylyEvents()
+        {
+            DateTime dateTime;
             foreach (var account in Calendars.Accounts)
             {
                 if (account.Enabled && account.Events.Items != null && account.Events.Items.Count > 0)
@@ -655,8 +748,10 @@ namespace stp
                     }
                 }
             }
-            #endregion
-            #region WeekEwents
+        }
+        private void PopulateWeeklyEvents()
+        {
+            DateTime dateTime;
             foreach (var account in Calendars.Accounts)
             {
                 if (account.Enabled && account.Events.Items != null && account.Events.Items.Count > 0)
@@ -675,8 +770,10 @@ namespace stp
                     }
                 }
             }
-            #endregion
-            #region MonthEvents
+        }
+        private void PopulateMonthlyEvents()
+        {
+            DateTime dateTime;
             foreach (var account in Calendars.Accounts)
             {
                 if (account.Enabled && account.Events.Items != null && account.Events.Items.Count > 0)
@@ -710,7 +807,6 @@ namespace stp
                     }
                 }
             }
-            #endregion
         }
 
         private void TaskGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
