@@ -23,6 +23,8 @@ namespace stp
     class AccountsForSerialization
     {
         public ObservableCollection<Account> Accounts;
+
+
     }
 
     [Serializable]
@@ -38,7 +40,8 @@ namespace stp
         private byte A;
         private byte B;
         private byte G;
-        private byte R;        
+        private byte R;    
+        
         [NonSerialized]
         private System.Windows.Media.Color _Color;
         public System.Windows.Media.Color Color

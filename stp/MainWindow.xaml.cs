@@ -945,8 +945,28 @@ namespace stp
                 task.OldDeadline = task.Deadline;
                 task.EventId = Event.Id;
                 task.Deadline = Event.Start.DateTime;
-                SetTaskInfo();
                 
+                var cmd = SqlClient.CreateCommand(@"update tasks set EventId = @EventId  
+                                                    where taskid=@taskid ");
+                cmd.Parameters.Add(new SQLiteParameter("EventId", task.EventId));
+                cmd.Parameters.Add(new SQLiteParameter("taskid", task.TaskId));
+                cmd.ExecuteNonQuery();
+
+                cmd = SqlClient.CreateCommand(@"update tasks set OldDeadline = @OldDeadline  
+                                                    where taskid=@taskid ");
+                cmd.Parameters.Add(new SQLiteParameter("OldDeadline", task.OldDeadline));
+                cmd.Parameters.Add(new SQLiteParameter("taskid", task.TaskId));
+                cmd.ExecuteNonQuery();
+
+                cmd = SqlClient.CreateCommand(@"update tasks set Deadline = @Deadline  
+                                                    where taskid=@taskid ");
+                cmd.Parameters.Add(new SQLiteParameter("Deadline", task.Deadline));
+                cmd.Parameters.Add(new SQLiteParameter("taskid", task.TaskId));
+                cmd.ExecuteNonQuery();
+
+                SetTaskInfo();
+                AddAccount.IsEnabled = true;
+                DeleteAccount.IsEnabled = true;
                 Tabcontrol.SelectedItem = Tasks;
             }
             else
@@ -1170,6 +1190,7 @@ namespace stp
             {
                 SetTasksGrid(SelectedGroup().GroupId); chang = false;
             }
+            GroupListBox.Items.Refresh();
         }
 
         private void CheckBox_GotFocus(object sender, RoutedEventArgs e)
@@ -1235,7 +1256,7 @@ namespace stp
         public void SetEventList()
         {
             AllEventsList = new List<Events>();
-            // var t = Calendars.Accounts;
+
             foreach (var acc in Calendars.Accounts.Where(w=>w.ToDoEnable))
             {
                 foreach (var evt in acc.Events.Items)
@@ -1250,9 +1271,10 @@ namespace stp
                     });
                 }
             }
+            EventsListBox.Items.Clear();
+            AllEventsList.OrderBy(w => w.EventDate).Where(w => w.EventDate > DateTime.Now).
+                Select(w => w).Take(10).ToList().ForEach(w => EventsListBox.Items.Add(w));
 
-            EventsListBox.ItemsSource = AllEventsList.OrderBy(w => w.EventDate).Where(w => w.EventDate > DateTime.Now).
-                Select(w=>string.Format("{0} {1} - {2}", w.EventDate.Value.ToShortDateString(), w.EventDate.Value.ToShortTimeString(),w.Summary)).Take(10);
         }
 
         private void DeleteAccount_Click(object sender, RoutedEventArgs e)
@@ -1284,10 +1306,6 @@ namespace stp
             if (item != null)
                 DragDrop.DoDragDrop(TaskGrid, item, DragDropEffects.Move);
 
-            //DropTask = SelectedTask();
-            //object item = DropTask;
-            //if (item != null)
-            //    DragDrop.DoDragDrop(TaskGrid, item, DragDropEffects.Move);
         }
 
         private void Control_Drop(object sender, DragEventArgs e)
@@ -1311,11 +1329,35 @@ namespace stp
 
         private void EventButton_Click(object sender, RoutedEventArgs e)
         {
-
+            if (SelectedTask().EventId == null || SelectedTask().EventId == string.Empty) { return; }
+            var Event = Calendars.GetEventById(SelectedTask().EventId);
+            var eventForm = new Event(Event);
+            eventForm.Show();
         }
         bool JustVievCalendar = false;
         private void AddRemoveButton_Click(object sender, RoutedEventArgs e)
         {
+            if (AddRemoveButton.Content.ToString() == "Remove")
+            {
+                var task = SelectedTask();
+                task.EventId = string.Empty;
+                task.Deadline = task.OldDeadline;
+
+                var cmd = SqlClient.CreateCommand(@"update tasks set EventId = @EventId  
+                                                    where taskid=@taskid ");
+                cmd.Parameters.Add(new SQLiteParameter("EventId", task.EventId));
+                cmd.Parameters.Add(new SQLiteParameter("taskid", task.TaskId));
+                cmd.ExecuteNonQuery();
+
+                cmd = SqlClient.CreateCommand(@"update tasks set Deadline = @Deadline  
+                                                    where taskid=@taskid ");
+                cmd.Parameters.Add(new SQLiteParameter("Deadline", task.Deadline));
+                cmd.Parameters.Add(new SQLiteParameter("taskid", task.TaskId));
+                cmd.ExecuteNonQuery();
+                SetTaskInfo();
+                RefreshCalendarTab();
+                return;
+            }
             AddAccount.IsEnabled = false;
             DeleteAccount.IsEnabled = false;
             JustVievCalendar = true;
@@ -1327,6 +1369,19 @@ namespace stp
         private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
         {
             RefreshCalendarTab();
+        }
+
+        private void EventsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var list = (ListBox)sender;
+
+            var item = (Events)list.SelectedItem;
+            if (item == null) { return; }
+
+            var Event = Calendars.GetEventById(item.ID);
+            var eventForm = new Event(Event);
+            eventForm.Show();
+
         }
     }
 }
