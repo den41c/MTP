@@ -125,6 +125,7 @@
                             <RowDefinition Height="1*" />
                         </Grid.RowDefinitions>
                         <Label>Time</Label>
+                        <Label Grid.Column="1">Events</Label>
                         <Label Grid.Row="1">00:00</Label>
                         <Label Grid.Row="2">04:00</Label>
                         <Label Grid.Row="3">08:00</Label>
@@ -214,14 +215,14 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </Border>
-                    <Button Name="LeftArrow" Margin="45,60,0,0" Width="25" VerticalAlignment="Top" HorizontalAlignment="Left" Click="LeftArrow_Click">
-                        <StackPanel>
-                            <Image Source="arrow_right.png" />
-                        </StackPanel>
-                    </Button>
-                    <Button Name="RightArrow" Margin="15,60,0,0" Width="25" VerticalAlignment="Top" HorizontalAlignment="Left" Click="RightArrow_Click">
+                    <Button Name="LeftArrow" Margin="15,60,0,0" Width="25" VerticalAlignment="Top" HorizontalAlignment="Left" Click="LeftArrow_Click">
                         <StackPanel>
                             <Image Source="arrow_left.png" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="RightArrow" Margin="45,60,0,0" Width="25" VerticalAlignment="Top" HorizontalAlignment="Left" Click="RightArrow_Click">
+                        <StackPanel>
+                            <Image Source="arrow_right.png" />
                         </StackPanel>
                     </Button>
                 </Grid>

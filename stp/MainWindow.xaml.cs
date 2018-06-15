@@ -636,8 +636,13 @@ namespace stp
             LoadAccounts();
             SetEventList();
 
-            RefreshCalendarTab();
+            PopulateDaylyEvents();
+            PopulateWeeklyEvents();
+            PopulateMonthlyEvents();
 
+            PopulateDaylyTasks();
+            PopulateWeeklyTasks();
+            PopulateMonthlyTasks();
         }
 
         private void RefreshCalendarTab()
@@ -666,8 +671,9 @@ namespace stp
                     removeList.Add((Label)item);
             }
             foreach (var item in removeList)
-                if(!(item.Content == "Time" || item.Content == "00:00" || item.Content == "04:00" || item.Content == "08:00" || item.Content == "12:00" || item.Content == "16:00" || item.Content == "20:00"))
-                    Weekly.Children.Remove(item);          
+            {
+                Weekly.Children.Remove(item);
+            }
 
             DateTime dateTime = Calendars.SelectedDateTime;
             for (int i = 1; i < 8; i++)
@@ -678,6 +684,34 @@ namespace stp
                 Grid.SetColumn(label, i);
                 Weekly.Children.Add(label);
             }
+            Label l0 = new Label();
+            l0.Content = "Time";
+            Grid.SetRow(l0, 0);
+            Weekly.Children.Add(l0);
+            Label l1 = new Label();
+            l1.Content = "00:00";
+            Grid.SetRow(l1, 1);
+            Weekly.Children.Add(l1);
+            Label l2 = new Label();
+            l2.Content = "04:00";
+            Grid.SetRow(l2, 2);
+            Weekly.Children.Add(l2);
+            Label l3 = new Label();
+            l3.Content = "08:00";
+            Grid.SetRow(l3, 3);
+            Weekly.Children.Add(l3);
+            Label l4 = new Label();
+            l4.Content = "12:00";
+            Grid.SetRow(l4, 4);
+            Weekly.Children.Add(l4);
+            Label l5 = new Label();
+            l5.Content = "16:00";
+            Grid.SetRow(l5, 5);
+            Weekly.Children.Add(l5);
+            Label l6 = new Label();
+            l6.Content = "20:00";
+            Grid.SetRow(l6, 6);
+            Weekly.Children.Add(l6);
         }
         private void RecreateMonthlyLabels()
         {
@@ -712,6 +746,34 @@ namespace stp
                 listBox.Items.Add(t);
                 dateTime = dateTime.AddDays(1);
             }
+            Label l0 = new Label();
+            l0.Content = "Sun";
+            Grid.SetColumn(l0, 0);
+            Monthly.Children.Add(l0);
+            Label l1 = new Label();
+            l1.Content = "Mon";
+            Grid.SetColumn(l1, 1);
+            Monthly.Children.Add(l1);
+            Label l2 = new Label();
+            l2.Content = "Tue";
+            Grid.SetColumn(l2, 2);
+            Monthly.Children.Add(l2);
+            Label l3 = new Label();
+            l3.Content = "Wed";
+            Grid.SetColumn(l3, 3);
+            Monthly.Children.Add(l3);
+            Label l4 = new Label();
+            l4.Content = "Thu";
+            Grid.SetColumn(l4, 4);
+            Monthly.Children.Add(l4);
+            Label l5 = new Label();
+            l5.Content = "Fri";
+            Grid.SetColumn(l5, 5);
+            Monthly.Children.Add(l5);
+            Label l6 = new Label();
+            l6.Content = "Sat";
+            Grid.SetColumn(l6, 6);
+            Monthly.Children.Add(l6);
         }
 
         private void CleanDaylyLists()
@@ -1084,39 +1146,37 @@ namespace stp
             switch (comboBoxCalendarView.SelectedItem.ToString())
             {
                 case "Daily":
-                    Calendars.SelectedDateTime.AddDays(-1);
+                    Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddDays(-1);
                     break;
                 case "Weekly":
-                    Calendars.SelectedDateTime.AddDays(-7);
+                    Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddDays(-7);
                     break;
                 case "Monthly":
-                    Calendars.SelectedDateTime.AddMonths(-1);
+                    Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddMonths(-1);
                     break;
                 default:
                     break;
             }
-            RefreshGreed();
-            RefreshEvents();
+            RefreshCalendarTab();
         }
 
         private void RightArrow_Click(object sender, RoutedEventArgs e)
         {
-            switch (comboBoxCalendarView.SelectedItem.ToString())
+            switch (comboBoxCalendarView.SelectedValue.ToString())
             {
                 case "Daily":
-                    Calendars.SelectedDateTime.AddDays(1);
+                    Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddDays(1);
                     break;
                 case "Weekly":
-                    Calendars.SelectedDateTime.AddDays(7);
+                    Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddDays(7);
                     break;
                 case "Monthly":
-                    Calendars.SelectedDateTime.AddMonths(1);
+                    Calendars.SelectedDateTime = Calendars.SelectedDateTime.AddMonths(1);
                     break;
                 default:
                     break;
             }
-            RefreshGreed();
-            RefreshEvents();
+            RefreshCalendarTab();
         }
 
         public void SetEventList()
@@ -1140,16 +1200,6 @@ namespace stp
 
             EventsListBox.ItemsSource = AllEventsList.OrderBy(w => w.EventDate).Where(w => w.EventDate > DateTime.Now).
                 Select(w=>string.Format("{0} {1} - {2}", w.EventDate.Value.ToShortDateString(), w.EventDate.Value.ToShortTimeString(),w.Summary)).Take(10);
-        }
-
-        private void RefreshGreed()
-        {
-
-        }
-
-        private void RefreshEvents()
-        {
-
         }
 
         private void DeleteAccount_Click(object sender, RoutedEventArgs e)
