@@ -239,6 +239,7 @@ namespace stp
             SetTasksGrid(group.GroupId);
             GroupListBox.Items.Refresh();
             TaskTextBox.Text = string.Empty;
+            RefreshCalendarTab();
         }
 
         private void RemoveTaskButton_Click(object sender, RoutedEventArgs e)
@@ -634,6 +635,19 @@ namespace stp
             Calendars.RunJob();
             LoadAccounts();
             SetEventList();
+
+            RefreshCalendarTab();
+
+        }
+
+        private void RefreshCalendarTab()
+        {
+            CleanDaylyLists();
+            CleanMonthlyLists();
+            CleanWeeklyLists();
+
+            RecreateMonthlyLabels();
+            RecreateWeeklyLabels();
 
             PopulateDaylyEvents();
             PopulateWeeklyEvents();
@@ -1032,6 +1046,7 @@ namespace stp
                task_list.Find(w => w.TaskId == SelectedTask().TaskId).Deadline = (DateTime?)Deadline.Value;
                 SaveChanges();
             }
+            RefreshCalendarTab();
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -1197,6 +1212,11 @@ namespace stp
             Tabcontrol.SelectedItem = Calendar;
 
 
+        }
+
+        private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            RefreshCalendarTab();
         }
     }
 }

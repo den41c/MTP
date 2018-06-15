@@ -207,7 +207,7 @@
                                             <ColumnDefinition Width="150"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
                                         <CheckBox IsChecked="{Binding Path=Enabled}"/>
-                                        <xctk:ColorPicker Grid.Column="1" Width="45" SelectedColor="{Binding Path=Color}"/>
+                                        <xctk:ColorPicker Grid.Column="1" Width="45" SelectedColor="{Binding Path=Color}" SelectedColorChanged="ColorPicker_SelectedColorChanged" />
                                         <TextBlock Grid.Column="2" Text="{Binding Path=Email}"/>
                                     </Grid>
                                 </DataTemplate>

@@ -47,6 +47,7 @@ namespace stp
             set
             {
                 _Color = value;
+                
             }
         }
         public Account(bool enabled, string email, byte color1, byte color2, byte color3)

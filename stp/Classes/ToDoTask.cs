@@ -71,7 +71,7 @@ namespace stp.Classes
                 _deadline = value;
                 Color = Brushes.Transparent;
 
-                if (_deadline.Value == DateTime.MinValue || _deadline.Value == null)
+                if (_deadline == null || _deadline.Value == DateTime.MinValue )
                 {
                     return;
                 }
